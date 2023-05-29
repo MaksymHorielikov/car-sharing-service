@@ -9,12 +9,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
 import java.math.BigDecimal;
+import lombok.Data;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Data
 @Entity
 @Table(name = "cars")
+@SQLDelete(sql = "UPDATE cars SET deleted = true WHERE id=?")
+@Where(clause = "deleted = false")
 public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +33,7 @@ public class Car {
     private Integer inventory;
     @Min(value = 0)
     private BigDecimal dailyFee;
+    private boolean deleted = false;
 
     public enum Type {
         SEDAN("Sedan"),
