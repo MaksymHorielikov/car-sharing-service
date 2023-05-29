@@ -17,6 +17,6 @@ public class Rental {
     private Long id;
     private LocalDateTime rentalDate;
     private LocalDateTime returnDate;
-    private int carId;
-    private int userId;
+    private Long carId;
+    private Long userId;
 }
