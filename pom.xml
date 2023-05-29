@@ -15,7 +15,7 @@
     <name>car-sharing-service</name>
     <description>car-sharing-service</description>
     <properties>
-        <java.version>16</java.version>
+        <java.version>17</java.version>
         <maven.checkstyle.plugin.configLocation>
            checkstyle.xml
         </maven.checkstyle.plugin.configLocation>
