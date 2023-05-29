@@ -2,6 +2,8 @@ package com.example.carsharingservice.model;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -19,13 +21,18 @@ public class User {
     private Long id;
     @Column(unique = true)
     private String email;
-    private String firstname;
-    private String lastname;
+    private String firstName;
+    private String lastName;
     private String password;
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     public enum Role {
-        MANAGER,
-        CUSTOMER
+        MANAGER("MANAGER"),
+        CUSTOMER("CUSTOMER");
+        private String value;
+        Role(String value){
+            this.value = value;
+        }
     }
 }
