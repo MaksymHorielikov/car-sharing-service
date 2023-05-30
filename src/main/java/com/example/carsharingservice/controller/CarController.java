@@ -1,8 +1,8 @@
 package com.example.carsharingservice.controller;
 
+import com.example.carsharingservice.dto.mapper.DtoMapper;
 import com.example.carsharingservice.dto.request.CarRequestDto;
 import com.example.carsharingservice.dto.response.CarResponseDto;
-import com.example.carsharingservice.dto.mapper.CarMapper;
 import com.example.carsharingservice.model.Car;
 import com.example.carsharingservice.service.CarService;
 import java.util.List;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/cars")
 public class CarController {
     private CarService carService;
-    private final CarMapper mapper;
+    private final DtoMapper<Car,CarRequestDto, CarResponseDto> mapper;
 
     @PostMapping()
     public CarResponseDto create(@RequestBody CarRequestDto carRequestDto) {
