@@ -1,8 +1,8 @@
 package com.example.carsharingservice.controller;
 
 import com.example.carsharingservice.dto.mapper.DtoMapper;
-import com.example.carsharingservice.dto.request.RequestRentalDto;
-import com.example.carsharingservice.dto.response.ResponseRentalDto;
+import com.example.carsharingservice.dto.request.RentalRequestDto;
+import com.example.carsharingservice.dto.response.RentalResponseDto;
 import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.service.CarService;
 import com.example.carsharingservice.service.NotificationService;
@@ -24,11 +24,11 @@ public class RentalController {
     private final RentalService rentalService;
     private final NotificationService telegramService;
     private final CarService carService;
-    private final DtoMapper<Rental, RequestRentalDto, ResponseRentalDto> rentalMapper;
+    private final DtoMapper<Rental, RentalRequestDto, RentalResponseDto> rentalMapper;
 
     @PostMapping
-    public ResponseRentalDto add(@RequestBody @Valid RequestRentalDto rentalDto) {
-        ResponseRentalDto responseRentalDto =
+    public RentalResponseDto add(@RequestBody @Valid RentalRequestDto rentalDto) {
+        RentalResponseDto responseRentalDto =
                 rentalMapper.toDto(rentalService.save(rentalMapper.toModel(rentalDto)));
         // decrease car inventory by 1;
         telegramService.sendMessage("New rental was added with ID: "
@@ -40,19 +40,19 @@ public class RentalController {
     }
 
     @GetMapping("/{user_id}/{is_active}")
-    public ResponseRentalDto getByUserAndActive(@PathVariable Long userId,
+    public RentalResponseDto getByUserAndActive(@PathVariable Long userId,
                                                 @PathVariable boolean isActive) {
         // need user service
         return null;
     }
 
     @GetMapping("/{id}")
-    public ResponseRentalDto getById(@PathVariable Long id) {
+    public RentalResponseDto getById(@PathVariable Long id) {
         return rentalMapper.toDto(rentalService.getById(id));
     }
 
     @PostMapping("/{id}/return")
-    public ResponseRentalDto setActualDate(@RequestParam Long id) {
+    public RentalResponseDto setActualDate(@RequestParam Long id) {
         // need car service
         return null;
     }
