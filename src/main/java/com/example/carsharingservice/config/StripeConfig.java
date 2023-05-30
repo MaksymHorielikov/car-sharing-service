@@ -13,4 +13,8 @@ import org.springframework.stereotype.Component;
 public class StripeConfig {
     @Value("${stripe.secret.key}")
     private String secretKey;
+    @Value("${stripe.success.url}")
+    private String successUrl;
+    @Value("${stripe.cancel.url}")
+    private String cancelUrl;
 }
