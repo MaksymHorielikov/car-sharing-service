@@ -31,8 +31,8 @@ public class RentalController {
     }
 
     @GetMapping("/{user_id}/{is_active}")
-    public ResponseRentalDto getByUserAndActive(@PathVariable Long user_id,
-                                                @PathVariable boolean is_active) {
+    public ResponseRentalDto getByUserAndActive(@PathVariable Long userId,
+                                                @PathVariable boolean isActive) {
         // need user service
         return null;
     }
