@@ -1,6 +1,6 @@
 package com.example.carsharingservice.config;
 
-import com.example.carsharingservice.service.TelegramService;
+import com.example.carsharingservice.service.impl.TelegramService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;

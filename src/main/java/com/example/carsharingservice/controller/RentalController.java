@@ -4,6 +4,8 @@ import com.example.carsharingservice.dto.mapper.DtoMapper;
 import com.example.carsharingservice.dto.request.RequestRentalDto;
 import com.example.carsharingservice.dto.response.ResponseRentalDto;
 import com.example.carsharingservice.model.Rental;
+import com.example.carsharingservice.service.CarService;
+import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.RentalService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/rentals")
 public class RentalController {
     private final RentalService rentalService;
+    private final NotificationService telegramService;
+    private final CarService carService;
     private final DtoMapper<Rental, RequestRentalDto, ResponseRentalDto> rentalMapper;
 
     @PostMapping
@@ -27,6 +31,11 @@ public class RentalController {
         ResponseRentalDto responseRentalDto =
                 rentalMapper.toDto(rentalService.save(rentalMapper.toModel(rentalDto)));
         // decrease car inventory by 1;
+        telegramService.sendMessage("New rental was added with ID: "
+                + responseRentalDto.getId() + "\n"
+                + "Car brand:" + carService.findById(responseRentalDto.getCarId()).getBrand() + "\n"
+                + "Rental date: " + responseRentalDto.getRentalDate().toString() + "\n"
+                + "Return date: " + responseRentalDto.getReturnDate().toString());
         return responseRentalDto;
     }
 
