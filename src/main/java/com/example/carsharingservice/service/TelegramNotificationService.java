@@ -10,7 +10,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
 @AllArgsConstructor
-public class TelegramService extends TelegramLongPollingBot {
+public class TelegramNotificationService extends TelegramLongPollingBot
+        implements NotificationService {
     private final BotConfig botConfig;
 
     @Override
@@ -27,8 +28,8 @@ public class TelegramService extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
 
         if (update.hasMessage() && update.getMessage().hasText()) {
-            String messageText = update.getMessage().getText();
-            long chatId = update.getMessage().getChatId();
+            String messageText = getMessageText(update);
+            long chatId = getChatId(update);
 
             switch (messageText) {
                 case "/start":
@@ -45,7 +46,8 @@ public class TelegramService extends TelegramLongPollingBot {
         sendMessage(chatId, answer);
     }
 
-    private void sendMessage(Long chatId, String textToSend) {
+    @Override
+    public void sendMessage(Long chatId, String textToSend) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(String.valueOf(chatId));
         sendMessage.setText(textToSend);
@@ -54,5 +56,13 @@ public class TelegramService extends TelegramLongPollingBot {
         } catch (TelegramApiException e) {
             throw new RuntimeException("Can`t send message due to error occured: ", e);
         }
+    }
+
+    private long getChatId(Update update) {
+        return update.getMessage().getChatId();
+    }
+
+    private String getMessageText(Update update) {
+        return update.getMessage().getText();
     }
 }

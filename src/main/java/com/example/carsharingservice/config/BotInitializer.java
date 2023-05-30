@@ -1,6 +1,6 @@
 package com.example.carsharingservice.config;
 
-import com.example.carsharingservice.service.TelegramService;
+import com.example.carsharingservice.service.TelegramNotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
@@ -11,10 +11,10 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
 @Component
 public class BotInitializer {
-    private final TelegramService telegramBot;
+    private final TelegramNotificationService telegramBot;
 
     @Autowired
-    public BotInitializer(TelegramService telegramBot) {
+    public BotInitializer(TelegramNotificationService telegramBot) {
         this.telegramBot = telegramBot;
     }
 
