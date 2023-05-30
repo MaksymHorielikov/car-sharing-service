@@ -9,33 +9,38 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import lombok.Data;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
 
 @Data
 @Entity
-@Table(name = "cars")
-@SQLDelete(sql = "UPDATE cars SET deleted = true WHERE id=?")
-@Where(clause = "deleted = false")
-public class Car {
+@Table(name = "payments")
+public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String model;
-    private String brand;
+    @Enumerated(EnumType.STRING)
+    private Status status;
     @Enumerated(EnumType.STRING)
     private Type type;
-    private Integer inventory;
-    private BigDecimal dailyFee;
-    private boolean deleted = false;
+    private Long rentalId;
+    private String sessionUrl;
+    private String sessionId;
+    private BigDecimal amount;
+
+    public enum Status {
+        PENDING("PENDING"), PAID("PAID");
+        private final String value;
+        Status(String value) {
+            this.value = value;
+        }
+    }
 
     public enum Type {
-        SEDAN("SEDAN"),
-        SUV("SUV"),
-        HATCHBACK("HATCHBACK"),
-        UNIVERSAL("UNIVERSAL");
+        PAYMENT("PAYMENT"),
+        FINE("FINE");
+        private final String value;
 
         Type(String value) {
+            this.value = value;
         }
     }
 }
