@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
@@ -17,7 +16,6 @@ import lombok.EqualsAndHashCode;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @EqualsAndHashCode.Exclude
     private Long id;
     @Column(unique = true)
     private String email;
@@ -31,7 +29,7 @@ public class User {
         MANAGER("MANAGER"),
         CUSTOMER("CUSTOMER");
         private String value;
-        Role(String value){
+        Role(String value) {
             this.value = value;
         }
     }
