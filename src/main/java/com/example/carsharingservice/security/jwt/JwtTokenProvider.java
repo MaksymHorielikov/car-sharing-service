@@ -1,4 +1,4 @@
-package com.example.carsharingservice.securuty.jwt;
+package com.example.carsharingservice.security.jwt;
 
 import com.example.carsharingservice.exception.InvalidJwtAuthenticationException;
 import io.jsonwebtoken.Claims;
@@ -43,8 +43,7 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token) {
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUsername(token));
-        return new UsernamePasswordAuthenticationToken(userDetails,
-                userDetails.getPassword(),
+        return new UsernamePasswordAuthenticationToken(userDetails, "",
                 userDetails.getAuthorities());
     }
 

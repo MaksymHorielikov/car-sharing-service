@@ -1,4 +1,4 @@
-package com.example.carsharingservice.securuty;
+package com.example.carsharingservice.security;
 
 import com.example.carsharingservice.dto.mapper.UserMapper;
 import com.example.carsharingservice.dto.request.UserRequestDto;
