@@ -53,6 +53,7 @@ public class UserServiceImpl implements UserService {
         userUpdate.setEmail(user.getEmail());
         userUpdate.setRole(user.getRole());
         userUpdate.setPassword(userUpdate.getPassword());
+        userUpdate.setChatId(userUpdate.getChatId());
         return userRepository.save(userUpdate);
     }
 }

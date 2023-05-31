@@ -11,4 +11,6 @@ public interface RentalService {
     void delete(Long id);
 
     List<Rental> findAll();
+
+    List<Rental> findAllByActualReturnDateAfterReturnDate();
 }
