@@ -1,4 +1,4 @@
-package com.example.carsharingservice.securuty.jwt;
+package com.example.carsharingservice.security.jwt;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

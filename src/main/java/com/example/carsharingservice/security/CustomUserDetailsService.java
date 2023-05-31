@@ -1,4 +1,4 @@
-package com.example.carsharingservice.securuty;
+package com.example.carsharingservice.security;
 
 import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.service.UserService;

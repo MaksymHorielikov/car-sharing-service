@@ -1,13 +1,16 @@
 package com.example.carsharingservice.config;
 
-import com.example.carsharingservice.securuty.jwt.JwtTokenFilter;
+import com.example.carsharingservice.model.User;
+import com.example.carsharingservice.security.jwt.JwtTokenFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
@@ -31,11 +34,22 @@ public class SecurityConfig {
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .userDetailsService(userDetailsService)
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
+                        HttpMethod.POST,
                         "/register", "/login"
                         ).permitAll()
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/register"
+                        ).hasRole(User.Role.CUSTOMER.name())
+                        .requestMatchers(
+                                HttpMethod.GET,
+                                "/users/me"
+                        ).hasRole(User.Role.CUSTOMER.name())
                         .anyRequest()
                         .authenticated()
                 )
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .headers(h -> h.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .build();
     }
 }
