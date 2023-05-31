@@ -1,6 +1,7 @@
-package com.example.carsharingservice.service;
+package com.example.carsharingservice.service.impl;
 
 import com.example.carsharingservice.config.BotConfig;
+import com.example.carsharingservice.service.NotificationService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -10,7 +11,8 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @Component
 @AllArgsConstructor
-public class TelegramService extends TelegramLongPollingBot {
+public class TelegramService extends TelegramLongPollingBot
+        implements NotificationService {
     private final BotConfig botConfig;
 
     @Override
@@ -25,29 +27,28 @@ public class TelegramService extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-
-        if (update.hasMessage() && update.getMessage().hasText()) {
+        if(update.hasMessage() && update.getMessage().hasText()) {
             String messageText = update.getMessage().getText();
-            long chatId = update.getMessage().getChatId();
-
             switch (messageText) {
                 case "/start":
-                    startCommandReceived(chatId, update.getMessage().getChat().getFirstName());
+                    startCommandReceived(update.getMessage().getChat().getFirstName());
                     break;
                 default:
-                    sendMessage(chatId, "func will be later");
+                    sendMessage("unknown command");
             }
         }
     }
 
-    private void startCommandReceived(Long chatId, String name) {
+    private void startCommandReceived(String name) {
         String answer = "Hi, " + name + ", nice to meet you!";
-        sendMessage(chatId, answer);
+        sendMessage(answer);
     }
 
-    private void sendMessage(Long chatId, String textToSend) {
+
+    @Override
+    public void sendMessage(String textToSend){
         SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(String.valueOf(chatId));
+        sendMessage.setChatId(botConfig.getChatId());
         sendMessage.setText(textToSend);
         try {
             execute(sendMessage);
