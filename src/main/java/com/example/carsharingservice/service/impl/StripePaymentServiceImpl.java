@@ -9,40 +9,49 @@ import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriComponentsBuilder;
 
 @AllArgsConstructor
 @Service
 public class StripePaymentServiceImpl implements StripePaymentService {
-    private final StripeConfig stripeConfig = new StripeConfig();
+    private final StripeConfig stripeConfig;
 
-    public Session createPaymentSession(Payment payment) {
-        Stripe.apiKey = stripeConfig.getSecretKey();
-        SessionCreateParams.LineItem.PriceData.ProductData productData =
-                SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                        .setName("Rental: " + payment.getRentalId())
-                        .build();
-        SessionCreateParams.LineItem.PriceData priceData =
-                SessionCreateParams.LineItem.PriceData.builder()
-                        .setCurrency("usd")
-                        .setUnitAmount(payment.getAmount().longValue() * 100) // convert to cents
-                        .setProductData(productData)
-                        .build();
-        SessionCreateParams.LineItem lineItem =
-                SessionCreateParams.LineItem.builder()
-                        .setQuantity(1L)
-                        .setPriceData(priceData)
-                        .build();
+    public Session createSession(Payment payment) {
+        String baseUrl = UriComponentsBuilder.fromHttpUrl("http://localhost:8080")
+                .path("/payments")
+                .toUriString();
+        String successUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(stripeConfig.getSuccessUrl())
+                .toUriString();
+        String cancelUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
+                .path(stripeConfig.getCancelUrl())
+                .toUriString();
+        SessionCreateParams.LineItem.PriceData.ProductData productData
+                = SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                .setName("Car rental")
+                .build();
+        SessionCreateParams.LineItem.PriceData priceData
+                = SessionCreateParams.LineItem.PriceData.builder()
+                .setCurrency("usd")
+                .setUnitAmount(payment.getAmount().longValue())
+                .setProductData(productData)
+                .build();
+        SessionCreateParams.LineItem lineItem = SessionCreateParams.LineItem.builder()
+                .setPriceData(priceData)
+                .setQuantity(1L)
+                .build();
         SessionCreateParams params = SessionCreateParams.builder()
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setSuccessUrl(stripeConfig.getSuccessUrl())
-                .setCancelUrl(stripeConfig.getCancelUrl())
+                .setCancelUrl(baseUrl + cancelUrl)
+                .setSuccessUrl(baseUrl + successUrl)
                 .addLineItem(lineItem)
                 .build();
+
         try {
             return Session.create(params);
         } catch (StripeException e) {
-            throw new RuntimeException("Sorry, can't create payment session", e);
+            throw new RuntimeException("Can't create Stripe payment Session ", e);
         }
     }
 

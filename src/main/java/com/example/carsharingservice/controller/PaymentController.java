@@ -1,61 +1,57 @@
 package com.example.carsharingservice.controller;
 
 import com.example.carsharingservice.dto.mapper.PaymentMapper;
+import com.example.carsharingservice.dto.request.PaymentRequestDto;
 import com.example.carsharingservice.dto.response.PaymentResponseDto;
 import com.example.carsharingservice.model.Payment;
 import com.example.carsharingservice.service.PaymentService;
-import com.example.carsharingservice.service.StripePaymentService;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @AllArgsConstructor
 @RestController
 @RequestMapping("/payments")
 public class PaymentController {
     private final PaymentService paymentService;
-    private final StripePaymentService stripePaymentService;
     private final PaymentMapper paymentMapper;
 
-    // Get payments for a specific user
-    @GetMapping
-    public PaymentResponseDto getPaymentsUserById(@RequestParam("rental_id") Long rentalId) {
-        return paymentMapper.toDto(paymentService.getPaymentByRentalId(rentalId));
-    }
-
-    // Create a new payment session
     @PostMapping
-    public void createPaymentSession(@RequestBody Long rentalId) {
-        Payment payment = paymentService.getPaymentByRentalId(rentalId);
-        stripePaymentService.createPaymentSession(payment);
+    public PaymentResponseDto createPaymentSession(@RequestBody
+                                                       PaymentRequestDto createPaymentSessionDto) {
+        Payment payment = paymentMapper.toModel(createPaymentSessionDto);
+        Payment createdPayment = paymentService.save(payment);
+        return paymentMapper.toDto(createdPayment);
     }
 
-    // Check for successful payment
+    @GetMapping
+    public List<PaymentResponseDto> getPaymentsByUser(@RequestParam("user_id") Long userId) {
+        List<Payment> payments = paymentService.getUserPayments(userId);
+        return payments.stream().map(paymentMapper::toDto).collect(Collectors.toList());
+    }
+
     @GetMapping("/success")
-    public String checkPaymentSuccess(@RequestParam("session_id") String sessionId) {
-        Payment payment = paymentService.findBySessionId(sessionId);
-
-        if (payment == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Payment not found");
-        }
-
-        if (payment.getStatus() == Payment.Status.PAID) {
-            return "Payment successful";
-        } else {
-            throw new ResponseStatusException(HttpStatus.UNPROCESSABLE_ENTITY,
-                    "Payment not successful");
-        }
+    public String handleSuccess(@RequestParam("sessionId") String sessionId) {
+        paymentService.handleSuccess(sessionId);
+        return "Payment successful!";
     }
 
-    // Handle cancelled payment
     @GetMapping("/cancel")
-    public String handleCancelledPayment() {
-        return "Payment unsuccessful";
+    public String handleCancel(@RequestParam("sessionId") String sessionId) {
+        paymentService.handleCancel(sessionId);
+        return "Payment was cancelled";
+    }
+
+    @PostMapping("/{paymentId}/renew")
+    public PaymentResponseDto renewPayment(@PathVariable Long paymentId) {
+        Payment payment = paymentService.renewPayment(paymentId);
+        return paymentMapper.toDto(payment);
     }
 }
