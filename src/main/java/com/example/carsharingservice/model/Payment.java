@@ -27,7 +27,7 @@ public class Payment {
     private BigDecimal amount;
 
     public enum Status {
-        PENDING("PENDING"), PAID("PAID");
+        PENDING("PENDING"), PAID("PAID"), EXPIRED("EXPIRED");
         private final String value;
         Status(String value) {
             this.value = value;

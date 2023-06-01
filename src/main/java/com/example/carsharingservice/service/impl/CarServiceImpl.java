@@ -39,4 +39,22 @@ public class CarServiceImpl implements CarService {
     public void deleteById(Long id) {
         carRepository.deleteById(id);
     }
+
+    @Override
+    public void decreaseInventory(Long carId, int number) {
+        Car car = findById(carId);
+        if (car.getInventory() > 0) {
+            car.setInventory(car.getInventory() - number);
+            update(car);
+        } else {
+            throw new RuntimeException("No car available ");
+        }
+    }
+
+    @Override
+    public void increaseInventory(Long carId, int number) {
+        Car car = findById(carId);
+        car.setInventory(car.getInventory() + number);
+        update(car);
+    }
 }
