@@ -30,6 +30,7 @@ public class AuthenticationController {
         return userMapper.toDto(authenticationService.register(userRequestDto));
     }
 
+
     @PostMapping("/login")
     public ResponseEntity<Object> login(@RequestBody UserRequestDto userRequestDto) {
         User user;
