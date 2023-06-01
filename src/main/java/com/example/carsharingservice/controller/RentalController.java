@@ -33,13 +33,7 @@ public class RentalController {
         RentalResponseDto responseRentalDto =
                 rentalMapper.toDto(rentalService.save(rentalMapper.toModel(rentalDto)));
         // decrease car inventory by 1;
-        telegramService.sendMessage(userService.findById(responseRentalDto.getUserId()).getChatId(),
-                "New rental was added with ID: "
-                        + responseRentalDto.getId() + "\n"
-                        + "Car brand:" + carService.findById(responseRentalDto.getCarId())
-                        .getBrand() + "\n"
-                        + "Rental date: " + responseRentalDto.getRentalDate() + "\n"
-                        + "Return date: " + responseRentalDto.getReturnDate());
+        telegramService.sendMessageAboutNewRental(responseRentalDto);
         return responseRentalDto;
     }
 

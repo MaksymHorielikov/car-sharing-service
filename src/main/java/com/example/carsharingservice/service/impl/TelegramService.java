@@ -1,8 +1,10 @@
 package com.example.carsharingservice.service.impl;
 
 import com.example.carsharingservice.config.BotConfig;
+import com.example.carsharingservice.dto.response.RentalResponseDto;
 import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.model.User;
+import com.example.carsharingservice.service.CarService;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.UserService;
@@ -24,6 +26,7 @@ public class TelegramService extends TelegramLongPollingBot
     private final BotConfig botConfig;
     private final UserService userService;
     private final RentalService rentalService;
+    private final CarService carService;
 
     @Override
     public String getBotUsername() {
@@ -73,6 +76,17 @@ public class TelegramService extends TelegramLongPollingBot
         }
     }
 
+    @Override
+    public void sendMessageAboutNewRental(RentalResponseDto rental) {
+        sendMessage(userService.findById(rental.getUserId()).getChatId(),
+                "New rental was added with ID: "
+                + rental.getId() + "\n"
+                + "Car brand:" + carService.findById(rental.getCarId())
+                .getBrand() + "\n"
+                + "Rental date: " + rental.getRentalDate() + "\n"
+                + "Return date: " + rental.getReturnDate());
+    }
+
     private boolean matchPattern(String email) {
         String regex = "^(.+)@(.+)$";
 
@@ -84,10 +98,13 @@ public class TelegramService extends TelegramLongPollingBot
     @Scheduled(cron = "0 * * * * ?")
     public void notifyAllUsersWhereActualReturnDateIsAfterReturnDate() {
         List<Rental> rentals = rentalService.findAllByActualReturnDateAfterReturnDate();
+        if (rentals.size() == 0) {
+            sendMessage(botConfig.getAdminId(),"No rentals overdue today!");
+        }
         for (Rental rental : rentals) {
             sendMessage(userService.findById(rental.getUserId()).getChatId(),
                     "Your car has to be "
-                            + "return, because your rental ended ");
+                            + "returned, because your rental ended ");
         }
     }
 }
