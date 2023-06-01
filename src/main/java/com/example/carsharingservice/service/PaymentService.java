@@ -4,7 +4,11 @@ import com.example.carsharingservice.model.Payment;
 import java.util.List;
 
 public interface PaymentService {
-    Payment save(Payment payment);
+    Payment save(Long rentalId);
+
+    Payment findById(Long id);
+
+    Payment update(Payment payment);
 
     void handleSuccess(String sessionId);
 
@@ -15,4 +19,6 @@ public interface PaymentService {
     List<Payment> findByUserId(Long userId);
 
     List<Payment> findByUserIdAndStatus(Long userId, Payment.Status status);
+
+    String checkPaymentStatus(String sessionId);
 }

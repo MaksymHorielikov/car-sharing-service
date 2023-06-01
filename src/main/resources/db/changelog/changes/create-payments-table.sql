@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS `payments`
     `status` VARCHAR(255) NOT NULL,
     `type` VARCHAR(255) NOT NULL,
     `rental_id` BIGINT NOT NULL,
-    `session_url` VARCHAR(255) NOT NULL,
+    `session_url` VARCHAR(500) NOT NULL,
     `session_id` VARCHAR(255) NOT NULL,
     `amount` DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (`rental_id`) REFERENCES rentals(id)

@@ -9,6 +9,7 @@ import com.example.carsharingservice.service.PaymentService;
 import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.StripePaymentService;
 import com.stripe.model.checkout.Session;
+import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.ArrayList;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Service
 public class PaymentServiceImpl implements PaymentService {
-    private static final BigDecimal DAILY_FEE = BigDecimal.valueOf(20);
     private static final BigDecimal FINE_MULTIPLIER = BigDecimal.valueOf(1.5);
     private final StripePaymentService stripePaymentService;
     private final PaymentRepository paymentRepository;
@@ -29,18 +29,33 @@ public class PaymentServiceImpl implements PaymentService {
     private final RentalService rentalService;
 
     @Override
-    public Payment save(Payment payment) {
-        Rental rental = rentalRepository.findById(payment.getRentalId())
+    public Payment save(Long rentalId) {
+        Rental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new RuntimeException("Can't find rental by id: "
-                        + payment.getRentalId()));
-
+                        + rentalId));
+        Payment payment = new Payment();
+        payment.setRentalId(rentalId);
+        payment.setType(checkPaymentType(rental));
         BigDecimal rentalAmount = calculateRentalAmount(rental, payment.getType());
         payment.setAmount(rentalAmount);
         Session session = stripePaymentService.createSession(payment);
+        payment.setStatus(Payment.Status.PENDING);
         payment.setSessionUrl(session.getUrl());
         payment.setSessionId(session.getId());
-        paymentRepository.save(payment);
-        return payment;
+        return paymentRepository.save(payment);
+    }
+
+    @Override
+    public Payment findById(Long id) {
+        return paymentRepository.findById(id).orElseThrow(() ->
+                new RuntimeException("Can't find payment by id: " + id));
+    }
+
+    @Override
+    public Payment update(Payment payment) {
+        paymentRepository.findById(payment.getId()).orElseThrow(() ->
+                new EntityNotFoundException("Can't find payment with id " + payment.getId()));
+        return paymentRepository.saveAndFlush(payment);
     }
 
     @Override
@@ -52,9 +67,9 @@ public class PaymentServiceImpl implements PaymentService {
                             + payment.getRentalId()));
             if (rental != null) {
                 payment.setStatus(Payment.Status.PAID);
-                rentalRepository.save(rental);
+                paymentRepository.save(payment);
                 notificationService.sendMessage("509114006","Payment was successful: \n"
-                        + payment.toString());
+                        + payment);
             }
         }
     }
@@ -65,7 +80,8 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment != null) {
             payment.setStatus(Payment.Status.PENDING);
             paymentRepository.save(payment);
-            notificationService.sendMessage("509114006", "Payment was unsuccessful: \n" + payment.toString());
+            notificationService.sendMessage("509114006",
+                    "Payment was unsuccessful: \n" + payment);
         }
     }
 
@@ -83,21 +99,6 @@ public class PaymentServiceImpl implements PaymentService {
             throw new RuntimeException("Can't renew payment that is not expired");
         }
         return payment;
-    }
-
-    private BigDecimal calculateRentalAmount(Rental rental, Payment.Type paymentType) {
-        long daysBetween = Duration.between(rental.getRentalDate(),
-                rental.getReturnDate()).toDays();
-        BigDecimal rentalAmount = DAILY_FEE.multiply(BigDecimal.valueOf(daysBetween));
-        if (paymentType == Payment.Type.FINE
-                && rental.getActualReturnDate().isAfter(rental.getReturnDate())) {
-            long overdueDays = Duration.between(rental.getReturnDate(),
-                    rental.getActualReturnDate()).toDays();
-            BigDecimal fineAmount = DAILY_FEE.multiply(FINE_MULTIPLIER)
-                    .multiply(BigDecimal.valueOf(overdueDays));
-            rentalAmount = rentalAmount.add(fineAmount);
-        }
-        return rentalAmount;
     }
 
     @Override
@@ -118,4 +119,39 @@ public class PaymentServiceImpl implements PaymentService {
                 .filter(p -> p.getStatus() == status)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public String checkPaymentStatus(String sessionId) {
+        return stripePaymentService.checkPaymentStatus(sessionId);
+    }
+
+    private BigDecimal calculateRentalAmount(Rental rental, Payment.Type paymentType) {
+        long daysBetween = Duration.between(rental.getRentalDate(),
+                rental.getReturnDate()).toDays();
+        BigDecimal rentalAmount = paymentRepository.getDailyFeeByRentalId(rental.getId())
+                .multiply(BigDecimal.valueOf(daysBetween));
+        if (paymentType == Payment.Type.FINE
+                && rental.getActualReturnDate().isAfter(rental.getReturnDate())) {
+            long overdueDays = Duration.between(rental.getReturnDate(),
+                    rental.getActualReturnDate()).toDays();
+            BigDecimal fineAmount = paymentRepository.getDailyFeeByRentalId(rental.getId())
+                    .multiply(FINE_MULTIPLIER)
+                    .multiply(BigDecimal.valueOf(overdueDays));
+            rentalAmount = rentalAmount.add(fineAmount);
+        }
+        return rentalAmount;
+    }
+
+    private Payment.Type checkPaymentType(Rental rental) {
+        long expectedDaysBetween = Duration.between(rental.getRentalDate(),
+                rental.getReturnDate()).toDays();
+        long daysBetween = Duration.between(rental.getRentalDate(),
+                rental.getActualReturnDate()).toDays();
+        if (expectedDaysBetween >= daysBetween) {
+            return Payment.Type.PAYMENT;
+        } else {
+            return Payment.Type.FINE;
+        }
+    }
+
 }

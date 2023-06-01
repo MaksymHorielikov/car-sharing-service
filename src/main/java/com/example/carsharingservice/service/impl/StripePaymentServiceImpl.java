@@ -17,15 +17,15 @@ public class StripePaymentServiceImpl implements StripePaymentService {
     private final StripeConfig stripeConfig;
 
     public Session createSession(Payment payment) {
-        String baseUrl = UriComponentsBuilder.fromHttpUrl("http://localhost:8080")
+        String baseUrl = UriComponentsBuilder.fromHttpUrl("http://localhost:8082")
                 .path("/payments")
                 .toUriString();
-        String successUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
-                .path(stripeConfig.getSuccessUrl())
-                .toUriString();
-        String cancelUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
-                .path(stripeConfig.getCancelUrl())
-                .toUriString();
+//        String successUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
+//                .path(stripeConfig.getSuccessUrl())
+//                .toUriString();
+//        String cancelUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
+//                .path(stripeConfig.getCancelUrl())
+//                .toUriString();
         SessionCreateParams.LineItem.PriceData.ProductData productData
                 = SessionCreateParams.LineItem.PriceData.ProductData.builder()
                 .setName("Car rental")
@@ -33,7 +33,7 @@ public class StripePaymentServiceImpl implements StripePaymentService {
         SessionCreateParams.LineItem.PriceData priceData
                 = SessionCreateParams.LineItem.PriceData.builder()
                 .setCurrency("usd")
-                .setUnitAmount(payment.getAmount().longValue())
+                .setUnitAmount(payment.getAmount().longValue() * 100)
                 .setProductData(productData)
                 .build();
         SessionCreateParams.LineItem lineItem = SessionCreateParams.LineItem.builder()
@@ -43,8 +43,8 @@ public class StripePaymentServiceImpl implements StripePaymentService {
         SessionCreateParams params = SessionCreateParams.builder()
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setCancelUrl(baseUrl + cancelUrl)
-                .setSuccessUrl(baseUrl + successUrl)
+                .setCancelUrl(stripeConfig.getCancelUrl())
+                .setSuccessUrl(stripeConfig.getSuccessUrl())
                 .addLineItem(lineItem)
                 .build();
 
@@ -55,11 +55,12 @@ public class StripePaymentServiceImpl implements StripePaymentService {
         }
     }
 
-    public boolean checkPaymentStatus(String sessionId) {
+    @Override
+    public String checkPaymentStatus(String sessionId) {
         Stripe.apiKey = stripeConfig.getSecretKey();
         try {
             Session session = Session.retrieve(sessionId);
-            return "paid".equals(session.getPaymentStatus());
+            return session.getStatus();
         } catch (StripeException e) {
             throw new RuntimeException("Can't retrieve Stripe session",e);
         }

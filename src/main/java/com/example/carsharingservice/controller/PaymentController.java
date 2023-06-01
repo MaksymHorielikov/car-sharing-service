@@ -1,7 +1,6 @@
 package com.example.carsharingservice.controller;
 
 import com.example.carsharingservice.dto.mapper.PaymentMapper;
-import com.example.carsharingservice.dto.request.PaymentRequestDto;
 import com.example.carsharingservice.dto.response.PaymentResponseDto;
 import com.example.carsharingservice.model.Payment;
 import com.example.carsharingservice.service.PaymentService;
@@ -11,9 +10,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @AllArgsConstructor
@@ -23,31 +20,26 @@ public class PaymentController {
     private final PaymentService paymentService;
     private final PaymentMapper paymentMapper;
 
-    @PostMapping
-    public PaymentResponseDto createPaymentSession(@RequestBody
-                                                       PaymentRequestDto createPaymentSessionDto) {
-        Payment payment = paymentMapper.toModel(createPaymentSessionDto);
-        Payment createdPayment = paymentService.save(payment);
-        return paymentMapper.toDto(createdPayment);
+    @PostMapping("/{rentalId}")
+    public PaymentResponseDto createPaymentSession(@PathVariable Long rentalId) {
+        return paymentMapper.toDto(paymentService.save(rentalId));
     }
 
-    @GetMapping
-    public List<PaymentResponseDto> getPaymentsUserById(@RequestParam("user_id") Long userId) {
+    @GetMapping("/{userId}")
+    public List<PaymentResponseDto> getPaymentsUserById(@PathVariable Long userId) {
         return paymentService.findByUserId(userId).stream()
                 .map(paymentMapper::toDto)
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/success")
-    public String handleSuccess(@RequestParam("sessionId") String sessionId) {
-        paymentService.handleSuccess(sessionId);
-        return "Payment successful!";
-    }
-
-    @GetMapping("/cancel")
-    public String handleCancel(@RequestParam("sessionId") String sessionId) {
-        paymentService.handleCancel(sessionId);
-        return "Payment was cancelled";
+    @PostMapping("/complete/{paymentId}")
+    public PaymentResponseDto complete(@PathVariable Long paymentId) {
+        Payment payment = paymentService.findById(paymentId);
+        if (paymentService.checkPaymentStatus(payment.getSessionId()).equals("complete")) {
+            payment.setStatus(Payment.Status.PAID);
+            return paymentMapper.toDto(paymentService.update(payment));
+        }
+        return paymentMapper.toDto(payment);
     }
 
     @PostMapping("/{paymentId}/renew")

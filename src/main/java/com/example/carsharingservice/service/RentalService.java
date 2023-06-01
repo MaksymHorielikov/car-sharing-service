@@ -22,9 +22,9 @@ public interface RentalService {
   
     List<Rental> findAllByUserId(Long userId, PageRequest pageRequest);
 
+    List<Rental> findAllByUserId(Long id);
+
     void updateActualReturnDate(Long id);
 
     List<Rental> findAllByActualReturnDateAfterReturnDate();
-
-    List<Rental> findAllByUserId(Long id);
 }
