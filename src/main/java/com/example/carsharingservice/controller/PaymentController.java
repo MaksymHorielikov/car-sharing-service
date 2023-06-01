@@ -32,9 +32,10 @@ public class PaymentController {
     }
 
     @GetMapping
-    public List<PaymentResponseDto> getPaymentsByUser(@RequestParam("user_id") Long userId) {
-        List<Payment> payments = paymentService.getUserPayments(userId);
-        return payments.stream().map(paymentMapper::toDto).collect(Collectors.toList());
+    public List<PaymentResponseDto> getPaymentsUserById(@RequestParam("user_id") Long userId) {
+        return paymentService.findByUserId(userId).stream()
+                .map(paymentMapper::toDto)
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/success")
