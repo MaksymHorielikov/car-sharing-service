@@ -14,7 +14,4 @@ public class BotConfig {
 
     @Value("${bot.token}")
     private String token;
-
-    @Value("${bot.chatId}")
-    private String chatId;
 }

@@ -7,6 +7,7 @@ import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.service.CarService;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.RentalService;
+import com.example.carsharingservice.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,6 +25,7 @@ public class RentalController {
     private final RentalService rentalService;
     private final NotificationService telegramService;
     private final CarService carService;
+    private final UserService userService;
     private final DtoMapper<Rental, RentalRequestDto, RentalResponseDto> rentalMapper;
 
     @PostMapping
@@ -31,11 +33,13 @@ public class RentalController {
         RentalResponseDto responseRentalDto =
                 rentalMapper.toDto(rentalService.save(rentalMapper.toModel(rentalDto)));
         // decrease car inventory by 1;
-        telegramService.sendMessage("New rental was added with ID: "
-                + responseRentalDto.getId() + "\n"
-                + "Car brand:" + carService.findById(responseRentalDto.getCarId()).getBrand() + "\n"
-                + "Rental date: " + responseRentalDto.getRentalDate().toString() + "\n"
-                + "Return date: " + responseRentalDto.getReturnDate().toString());
+        telegramService.sendMessage(userService.findById(responseRentalDto.getUserId()).getChatId(),
+                "New rental was added with ID: "
+                        + responseRentalDto.getId() + "\n"
+                        + "Car brand:" + carService.findById(responseRentalDto.getCarId())
+                        .getBrand() + "\n"
+                        + "Rental date: " + responseRentalDto.getRentalDate() + "\n"
+                        + "Return date: " + responseRentalDto.getReturnDate());
         return responseRentalDto;
     }
 

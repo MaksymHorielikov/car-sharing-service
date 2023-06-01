@@ -31,4 +31,9 @@ public class RentalServiceImpl implements RentalService {
     public List<Rental> findAll() {
         return rentalRepository.findAll();
     }
+
+    @Override
+    public List<Rental> findAllByActualReturnDateAfterReturnDate() {
+        return rentalRepository.findAllByActualReturnDateAfterReturnDate();
+    }
 }
