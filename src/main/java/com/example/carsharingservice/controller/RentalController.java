@@ -9,9 +9,7 @@ import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.UserService;
 import jakarta.validation.Valid;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,15 +59,5 @@ public class RentalController {
     public RentalResponseDto setActualDate(@RequestParam Long id) {
         // need car service
         return null;
-    }
-
-    @Scheduled(cron = "*/10 * * * * *")
-    public void notifyAllUsersWhereActualReturnDateIsAfterReturnDate() {
-        List<Rental> rentals = rentalService.findAllByActualReturnDateAfterReturnDate();
-        for (Rental rental : rentals) {
-            telegramService.sendMessage(userService.findById(rental.getUserId()).getChatId(),
-                    "Your car has to be "
-                            + "return, because your rental ended ");
-        }
     }
 }

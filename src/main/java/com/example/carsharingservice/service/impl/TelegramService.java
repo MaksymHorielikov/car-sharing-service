@@ -1,12 +1,16 @@
 package com.example.carsharingservice.service.impl;
 
 import com.example.carsharingservice.config.BotConfig;
+import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.service.NotificationService;
+import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.UserService;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import lombok.AllArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -19,6 +23,7 @@ public class TelegramService extends TelegramLongPollingBot
         implements NotificationService {
     private final BotConfig botConfig;
     private final UserService userService;
+    private final RentalService rentalService;
 
     @Override
     public String getBotUsername() {
@@ -74,5 +79,15 @@ public class TelegramService extends TelegramLongPollingBot
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
+    }
+
+    @Scheduled(cron = "0 * * * * ?")
+    public void notifyAllUsersWhereActualReturnDateIsAfterReturnDate() {
+        List<Rental> rentals = rentalService.findAllByActualReturnDateAfterReturnDate();
+        for (Rental rental : rentals) {
+            sendMessage(userService.findById(rental.getUserId()).getChatId(),
+                    "Your car has to be "
+                            + "return, because your rental ended ");
+        }
     }
 }
