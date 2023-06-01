@@ -48,7 +48,7 @@ public class AuthenticationController {
     }
 
     @GetMapping("/register")
-    public String getRegister(){
+    public String getRegister() {
         return "Success";
     }
 }

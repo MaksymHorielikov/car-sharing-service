@@ -27,7 +27,7 @@ public class Car {
     private Type type;
     private Integer inventory;
     private BigDecimal dailyFee;
-    private boolean deleted = false;
+    private boolean deleted;
 
     public enum Type {
         SEDAN("SEDAN"),

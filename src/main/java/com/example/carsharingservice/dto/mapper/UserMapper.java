@@ -6,7 +6,7 @@ import com.example.carsharingservice.model.User;
 import org.springframework.stereotype.Component;
 
 @Component
-public class UserMapper implements DtoMapper<User, UserRequestDto, UserResponseDto>{
+public class UserMapper implements DtoMapper<User, UserRequestDto, UserResponseDto> {
     @Override
     public User toModel(UserRequestDto requestDto) {
         User user = new User();
@@ -14,7 +14,6 @@ public class UserMapper implements DtoMapper<User, UserRequestDto, UserResponseD
         user.setFirstName(requestDto.getFirstName());
         user.setLastName(requestDto.getLastName());
         user.setPassword(requestDto.getPassword());
-        user.setRole(requestDto.getRole());
         return user;
     }
 
