@@ -21,6 +21,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public User register(UserRequestDto userRequestDto) {
         User user = userMapper.toModel(userRequestDto);
         user.setRole(User.Role.CUSTOMER);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user = userService.save(user);
         return user;
     }
