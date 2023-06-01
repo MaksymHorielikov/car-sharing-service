@@ -39,14 +39,8 @@ public class RentalController {
 
         RentalResponseDto rentalResponseDto =
                 rentalMapper.toDto(rentalService.save(rentalMapper.toModel(rentalDto)));
-      
         carService.decreaseInventory(rentalResponseDto.getCarId(), 1);
-
-        telegramService.sendMessage("New rental was added with ID: "
-                + rentalResponseDto.getId() + "\n"
-                + "Car brand:" + carService.findById(rentalResponseDto.getCarId()).getBrand() + "\n"
-                + "Rental date: " + rentalResponseDto.getRentalDate().toString() + "\n"
-                + "Return date: " + rentalResponseDto.getReturnDate().toString());
+        telegramService.sendMessageAboutNewRental(responseRentalDto);       
         return rentalResponseDto;
     }
 
