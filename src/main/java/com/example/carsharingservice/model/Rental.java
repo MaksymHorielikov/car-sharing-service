@@ -24,5 +24,5 @@ public class Rental {
     private LocalDateTime actualReturnDate;
     private Long carId;
     private Long userId;
-    private boolean deleted = false;
+    private boolean deleted;
 }
