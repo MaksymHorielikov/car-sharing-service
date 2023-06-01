@@ -6,14 +6,16 @@ import com.example.carsharingservice.repository.PaymentRepository;
 import com.example.carsharingservice.repository.RentalRepository;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.PaymentService;
+import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.StripePaymentService;
 import com.stripe.model.checkout.Session;
 import java.math.BigDecimal;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @AllArgsConstructor
 @Service
@@ -24,6 +26,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final RentalRepository rentalRepository;
     private final NotificationService notificationService;
+    private final RentalService rentalService;
 
     @Override
     public Payment save(Payment payment) {
@@ -41,12 +44,6 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Payment> getUserPayments(Long userId) {
-        return paymentRepository.findByUserId(userId);
-    }
-
-    @Override
     public void handleSuccess(String sessionId) {
         Payment payment = paymentRepository.findBySessionId(sessionId);
         if (payment != null) {
@@ -56,7 +53,7 @@ public class PaymentServiceImpl implements PaymentService {
             if (rental != null) {
                 payment.setStatus(Payment.Status.PAID);
                 rentalRepository.save(rental);
-                notificationService.sendMessage("Payment was successful: \n"
+                notificationService.sendMessage("509114006","Payment was successful: \n"
                         + payment.toString());
             }
         }
@@ -68,7 +65,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment != null) {
             payment.setStatus(Payment.Status.PENDING);
             paymentRepository.save(payment);
-            notificationService.sendMessage("Payment was unsuccessful: \n" + payment.toString());
+            notificationService.sendMessage("509114006", "Payment was unsuccessful: \n" + payment.toString());
         }
     }
 
@@ -101,5 +98,24 @@ public class PaymentServiceImpl implements PaymentService {
             rentalAmount = rentalAmount.add(fineAmount);
         }
         return rentalAmount;
+    }
+
+    @Override
+    public List<Payment> findByUserId(Long userId) {
+        List<Payment> payments = new ArrayList<>();
+        List<Long> rentalIds = rentalService.findAllByUserId(userId).stream()
+                .map(Rental::getId)
+                .toList();
+        for (Long id : rentalIds) {
+            payments.add(paymentRepository.findByRentalId(id));
+        }
+        return payments;
+    }
+
+    @Override
+    public List<Payment> findByUserIdAndStatus(Long userId, Payment.Status status) {
+        return findByUserId(userId).stream()
+                .filter(p -> p.getStatus() == status)
+                .collect(Collectors.toList());
     }
 }
