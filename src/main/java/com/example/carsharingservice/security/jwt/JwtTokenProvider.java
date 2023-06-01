@@ -27,7 +27,7 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length:3600000}")
     private long validityInMilliseconds;
     private final UserDetailsService userDetailsService;
-    private final int START_INDEX_TOKEN = 7;
+    private final static  int START_INDEX_TOKEN = 7;
 
     public String createToken(String login, List<String> roles) {
         Claims claims = Jwts.claims().setSubject(login);
