@@ -22,12 +22,12 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @PropertySource("classpath:application.properties")
 public class JwtTokenProvider {
+    private static final int START_INDEX_TOKEN = 7;
     @Value("${security.jwt.token.secret-key:secret}")
     private String secretKey;
     @Value("${security.jwt.token.expire-length:3600000}")
     private long validityInMilliseconds;
     private final UserDetailsService userDetailsService;
-    private final static int START_INDEX_TOKEN = 7;
 
     public String createToken(String login, List<String> roles) {
         Claims claims = Jwts.claims().setSubject(login);

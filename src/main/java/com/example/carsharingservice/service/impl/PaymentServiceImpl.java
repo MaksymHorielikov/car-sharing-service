@@ -2,12 +2,14 @@ package com.example.carsharingservice.service.impl;
 
 import com.example.carsharingservice.model.Payment;
 import com.example.carsharingservice.model.Rental;
+import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.repository.PaymentRepository;
 import com.example.carsharingservice.repository.RentalRepository;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.PaymentService;
 import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.StripePaymentService;
+import com.example.carsharingservice.service.UserService;
 import com.stripe.model.checkout.Session;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
@@ -27,6 +29,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final RentalRepository rentalRepository;
     private final NotificationService notificationService;
     private final RentalService rentalService;
+    private final UserService userService;
 
     @Override
     public Payment save(Long rentalId) {
@@ -153,5 +156,4 @@ public class PaymentServiceImpl implements PaymentService {
             return Payment.Type.FINE;
         }
     }
-
 }

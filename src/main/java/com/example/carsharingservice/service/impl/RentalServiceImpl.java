@@ -64,6 +64,11 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
+    public List<Rental> findAllByUserId(Long id) {
+        return rentalRepository.findAllByUserId(id);
+    }
+
+    @Override
     public List<Rental> findAllByUserId(Long userId, PageRequest pageRequest) {
         return rentalRepository.findAllByUserId(userId, pageRequest);
     }
@@ -71,7 +76,7 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public void updateActualReturnDate(Long id) {
         Rental rental = getById(id);
-        if (rental.getActualReturnDate() != null) {
+        if (rental.getActualReturnDate() == null) {
             rental.setActualReturnDate(LocalDateTime.now());
             save(rental);
         } else {
@@ -82,10 +87,5 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public List<Rental> findAllByActualReturnDateAfterReturnDate() {
         return rentalRepository.findAllByActualReturnDateAfterReturnDate();
-    }
-
-    @Override
-    public List<Rental> findAllByUserId(Long id) {
-        return rentalRepository.findAllByUserId(id);
     }
 }

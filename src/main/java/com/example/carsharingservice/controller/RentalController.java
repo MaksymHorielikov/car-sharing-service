@@ -4,16 +4,20 @@ import com.example.carsharingservice.dto.mapper.DtoMapper;
 import com.example.carsharingservice.dto.request.RentalRequestDto;
 import com.example.carsharingservice.dto.response.RentalResponseDto;
 import com.example.carsharingservice.model.Rental;
+import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.service.CarService;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.RentalService;
+import com.example.carsharingservice.service.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,11 +34,11 @@ public class RentalController {
     private final NotificationService telegramService;
     private final CarService carService;
     private final DtoMapper<Rental, RentalRequestDto, RentalResponseDto> rentalMapper;
+    private final UserService userService;
 
     @PostMapping
     @ApiOperation(value = "Create a new rental")
     public RentalResponseDto add(@RequestBody @Valid RentalRequestDto rentalDto) {
-
         RentalResponseDto rentalResponseDto =
                 rentalMapper.toDto(rentalService.save(rentalMapper.toModel(rentalDto)));
         carService.decreaseInventory(rentalResponseDto.getCarId(), 1);
@@ -58,20 +62,24 @@ public class RentalController {
             return rentalService.findAllByUserId(userId, pageRequest)
                     .stream()
                     .map(rentalMapper::toDto)
-                    .filter(d -> d.getReturnDate() != null)
+                    .filter(d -> d.getActualReturnDate() == null)
                     .collect(Collectors.toList());
         }
-
         return rentalService.findAllByUserId(userId, pageRequest)
                 .stream()
                 .map(rentalMapper::toDto)
-                .filter(d -> d.getReturnDate() == null)
+                .filter(d -> d.getActualReturnDate() != null)
                 .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     @ApiOperation(value = "Get by id")
-    public RentalResponseDto getById(@PathVariable Long id) {
+    public RentalResponseDto getById(Authentication authentication, @PathVariable Long id) {
+        User user = userService.findByEmail(authentication.getName()).get();
+        if (user.getRole() == User.Role.CUSTOMER && !Objects.equals(user.getId(),
+                rentalService.getById(id).getUserId())) {
+            throw new RuntimeException("Can't get by this id: " + id);
+        }
         return rentalMapper.toDto(rentalService.getById(id));
     }
 
@@ -79,11 +87,8 @@ public class RentalController {
     @ApiOperation(value = "Set the date of car return")
     public RentalResponseDto setActualDate(@PathVariable Long id) {
         RentalResponseDto rentalResponseDto = rentalMapper.toDto(rentalService.getById(id));
-
         rentalService.updateActualReturnDate(id);
-
         carService.increaseInventory(rentalResponseDto.getCarId(), 1);
-
         return rentalResponseDto;
     }
 }
