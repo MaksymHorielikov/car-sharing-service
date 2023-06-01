@@ -2,12 +2,14 @@ package com.example.carsharingservice.service.impl;
 
 import com.example.carsharingservice.model.Payment;
 import com.example.carsharingservice.model.Rental;
+import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.repository.PaymentRepository;
 import com.example.carsharingservice.repository.RentalRepository;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.PaymentService;
 import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.StripePaymentService;
+import com.example.carsharingservice.service.UserService;
 import com.stripe.model.checkout.Session;
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -26,6 +28,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final RentalRepository rentalRepository;
     private final NotificationService notificationService;
     private final RentalService rentalService;
+    private final UserService userService;
 
     @Override
     public Payment save(Payment payment) {
@@ -52,8 +55,11 @@ public class PaymentServiceImpl implements PaymentService {
             if (rental != null) {
                 payment.setStatus(Payment.Status.PAID);
                 rentalRepository.save(rental);
-                notificationService.sendMessage("509114006","Payment was successful: \n"
-                        + payment);
+                User user = userService.findById(rental.getUserId());
+                if (user.getChatId() != null) {
+                    notificationService.sendMessage(user.getChatId(), "Payment was successful: \n"
+                            + payment);
+                }
             }
         }
     }
@@ -64,7 +70,10 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment != null) {
             payment.setStatus(Payment.Status.PENDING);
             paymentRepository.save(payment);
-            notificationService.sendMessage("509114006",
+            Rental rental = rentalRepository.findById(payment.getRentalId()).orElseThrow(() ->
+                    new RuntimeException("Can`t find rental by id: " + payment.getRentalId()));
+            User user = userService.findById(rental.getUserId());
+            notificationService.sendMessage(user.getChatId(),
                     "Payment was unsuccessful: \n" + payment);
         }
     }
