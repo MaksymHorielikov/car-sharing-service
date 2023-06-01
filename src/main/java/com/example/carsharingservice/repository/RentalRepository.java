@@ -18,12 +18,12 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     @Query("SELECT r.actualReturnDate FROM Rental r WHERE r.id = :id")
     Optional<LocalDateTime> findActualReturnDateById(@Param("id") Long id);
+
+    List<Rental> findAllByUserId(Long id);
   
     List<Rental> findAllByUserId(Long userId, PageRequest pageRequest);
   
     @Query("SELECT r FROM Rental r WHERE r.actualReturnDate IS NULL AND r.returnDate < CURDATE() "
             + "AND r.deleted = FALSE")
     List<Rental> findAllByActualReturnDateAfterReturnDate();
-
-    List<Rental> findAllByUserId(Long id);
 }

@@ -19,12 +19,12 @@ public interface RentalService {
     LocalDateTime getReturnDate(Long rentalId);
 
     LocalDateTime getActualReturnDate(Long rentalId);
-  
+
+    List<Rental> findAllByUserId(Long id);
+
     List<Rental> findAllByUserId(Long userId, PageRequest pageRequest);
 
     void updateActualReturnDate(Long id);
 
     List<Rental> findAllByActualReturnDateAfterReturnDate();
-
-    List<Rental> findAllByUserId(Long id);
 }
