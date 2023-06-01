@@ -34,9 +34,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .userDetailsService(userDetailsService)
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
-                                        HttpMethod.POST,
-                                        "/register", "/login"
-                                ).permitAll()
+                                 HttpMethod.POST, "/register", "/login").permitAll()
                                 .requestMatchers("/users/me")
                                 .hasAnyRole(User.Role.MANAGER.name(), User.Role.CUSTOMER.name())
                                 .requestMatchers(HttpMethod.PUT, "/users/{id}/role")
