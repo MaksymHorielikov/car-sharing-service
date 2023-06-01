@@ -1,19 +1,16 @@
 package com.example.carsharingservice.service;
 
 import com.example.carsharingservice.model.Payment;
-import com.stripe.model.checkout.Session;
 import java.util.List;
 
 public interface PaymentService {
     Payment save(Payment payment);
 
-    Payment getPaymentById(Long id);
+    List<Payment> getUserPayments(Long userId);
 
-    Payment getPaymentByRentalId(Long id);
+    void handleSuccess(String sessionId);
 
-    Payment findBySessionId(String sessionId);
+    void handleCancel(String sessionId);
 
-    List<Payment> getAll();
-
-    Session createStripePaymentSession(Payment payment);
+    Payment renewPayment(Long paymentId);
 }

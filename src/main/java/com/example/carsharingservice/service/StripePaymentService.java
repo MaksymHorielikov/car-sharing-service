@@ -4,7 +4,7 @@ import com.example.carsharingservice.model.Payment;
 import com.stripe.model.checkout.Session;
 
 public interface StripePaymentService {
-    Session createPaymentSession(Payment payment);
+    Session createSession(Payment payment);
 
     boolean checkPaymentStatus(String sessionId);
 }
