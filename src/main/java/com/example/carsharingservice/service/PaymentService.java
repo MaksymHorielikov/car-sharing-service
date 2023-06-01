@@ -6,11 +6,13 @@ import java.util.List;
 public interface PaymentService {
     Payment save(Payment payment);
 
-    List<Payment> getUserPayments(Long userId);
-
     void handleSuccess(String sessionId);
 
     void handleCancel(String sessionId);
 
     Payment renewPayment(Long paymentId);
+
+    List<Payment> findByUserId(Long userId);
+
+    List<Payment> findByUserIdAndStatus(Long userId, Payment.Status status);
 }
