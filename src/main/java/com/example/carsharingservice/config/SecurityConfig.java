@@ -37,14 +37,10 @@ public class SecurityConfig {
                         HttpMethod.POST,
                         "/register", "/login"
                         ).permitAll()
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/register"
-                        ).hasRole(User.Role.CUSTOMER.name())
-                        .requestMatchers(
-                                HttpMethod.GET,
-                                "/users/me"
-                        ).hasRole(User.Role.CUSTOMER.name())
+                        .requestMatchers("/users/me")
+                        .hasAnyRole(User.Role.MANAGER.name(), User.Role.CUSTOMER.name())
+                        .requestMatchers(HttpMethod.PUT, "/users/{id}/role")
+                        .hasRole(User.Role.MANAGER.name())
                         .anyRequest()
                         .authenticated()
                 )

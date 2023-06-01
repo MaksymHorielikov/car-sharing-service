@@ -16,4 +16,6 @@ public interface RentalService {
     List<Rental> findAllByUserId(Long userId, PageRequest pageRequest);
 
     void updateActualReturnDate(Long id);
+
+    List<Rental> findAllByActualReturnDateAfterReturnDate();
 }

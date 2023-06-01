@@ -27,6 +27,7 @@ public class JwtTokenProvider {
     @Value("${security.jwt.token.expire-length:3600000}")
     private long validityInMilliseconds;
     private final UserDetailsService userDetailsService;
+    private final static int START_INDEX_TOKEN = 7;
 
     public String createToken(String login, List<String> roles) {
         Claims claims = Jwts.claims().setSubject(login);
@@ -42,7 +43,7 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(getUsername(token));
+        UserDetails userDetails = userDetailsService.loadUserByUsername(getUsername(token));
         return new UsernamePasswordAuthenticationToken(userDetails, "",
                 userDetails.getAuthorities());
     }
@@ -57,10 +58,9 @@ public class JwtTokenProvider {
 
     public String resolveToken(HttpServletRequest req) {
         String bearerToken = req.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
+        return bearerToken != null && bearerToken.startsWith("Bearer ")
+                ? bearerToken.substring(START_INDEX_TOKEN)
+                : null;
     }
 
     public boolean validateToken(String token) {

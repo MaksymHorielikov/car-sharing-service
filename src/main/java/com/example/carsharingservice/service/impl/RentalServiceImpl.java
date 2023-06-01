@@ -48,5 +48,8 @@ public class RentalServiceImpl implements RentalService {
         } else {
             throw new RuntimeException("Car is already returned ");
         }
+      
+    public List<Rental> findAllByActualReturnDateAfterReturnDate() {
+        return rentalRepository.findAllByActualReturnDateAfterReturnDate();
     }
 }

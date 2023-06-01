@@ -9,6 +9,7 @@ import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.RentalService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import com.example.carsharingservice.service.UserService;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,6 +30,7 @@ public class RentalController {
     private final RentalService rentalService;
     private final NotificationService telegramService;
     private final CarService carService;
+    private final UserService userService;
     private final DtoMapper<Rental, RentalRequestDto, RentalResponseDto> rentalMapper;
 
     @PostMapping
@@ -37,7 +39,7 @@ public class RentalController {
 
         RentalResponseDto rentalResponseDto =
                 rentalMapper.toDto(rentalService.save(rentalMapper.toModel(rentalDto)));
-
+      
         carService.decreaseInventory(rentalResponseDto.getCarId(), 1);
 
         telegramService.sendMessage("New rental was added with ID: "
