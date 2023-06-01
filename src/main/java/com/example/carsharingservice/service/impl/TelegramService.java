@@ -27,7 +27,7 @@ public class TelegramService extends TelegramLongPollingBot
 
     @Override
     public void onUpdateReceived(Update update) {
-        if(update.hasMessage() && update.getMessage().hasText()) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
             String messageText = update.getMessage().getText();
             switch (messageText) {
                 case "/start":
@@ -44,9 +44,8 @@ public class TelegramService extends TelegramLongPollingBot
         sendMessage(answer);
     }
 
-
     @Override
-    public void sendMessage(String textToSend){
+    public void sendMessage(String textToSend) {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(botConfig.getChatId());
         sendMessage.setText(textToSend);
