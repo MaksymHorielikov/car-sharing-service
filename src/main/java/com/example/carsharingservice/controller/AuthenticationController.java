@@ -12,7 +12,6 @@ import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -28,8 +27,7 @@ public class AuthenticationController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     public UserResponseDto register(@RequestBody UserRequestDto userRequestDto) {
-        User user = authenticationService.register(userRequestDto);
-        return userMapper.toDto(user);
+        return userMapper.toDto(authenticationService.register(userRequestDto));
     }
 
     @PostMapping("/login")
@@ -45,10 +43,5 @@ public class AuthenticationController {
             return new ResponseEntity<>("Invalid username or password!",
                     HttpStatus.BAD_REQUEST);
         }
-    }
-
-    @GetMapping("/register")
-    public String getRegister() {
-        return "Success";
     }
 }
