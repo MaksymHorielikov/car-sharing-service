@@ -46,8 +46,9 @@ public class CarServiceImpl implements CarService {
         if (car.getInventory() > 0) {
             car.setInventory(car.getInventory() - number);
             update(car);
+        } else {
+            throw new RuntimeException("No car available ");
         }
-        throw new RuntimeException("No car available ");
     }
 
     @Override

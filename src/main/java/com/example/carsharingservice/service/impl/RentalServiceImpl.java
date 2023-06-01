@@ -42,7 +42,11 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public void updateActualReturnDate(Long id) {
         Rental rental = getById(id);
-        rental.setActualReturnDate(LocalDateTime.now());
-        save(rental);
+        if (rental.getActualReturnDate() != null) {
+            rental.setActualReturnDate(LocalDateTime.now());
+            save(rental);
+        } else {
+            throw new RuntimeException("Car is already returned ");
+        }
     }
 }
