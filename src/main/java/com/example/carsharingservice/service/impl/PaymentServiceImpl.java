@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Service
 public class PaymentServiceImpl implements PaymentService {
-    private static final BigDecimal DAILY_FEE = BigDecimal.valueOf(20);
     private static final BigDecimal FINE_MULTIPLIER = BigDecimal.valueOf(1.5);
     private final StripePaymentService stripePaymentService;
     private final PaymentRepository paymentRepository;
@@ -54,7 +53,7 @@ public class PaymentServiceImpl implements PaymentService {
                 payment.setStatus(Payment.Status.PAID);
                 rentalRepository.save(rental);
                 notificationService.sendMessage("509114006","Payment was successful: \n"
-                        + payment.toString());
+                        + payment);
             }
         }
     }
@@ -65,7 +64,8 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment != null) {
             payment.setStatus(Payment.Status.PENDING);
             paymentRepository.save(payment);
-            notificationService.sendMessage("509114006", "Payment was unsuccessful: \n" + payment.toString());
+            notificationService.sendMessage("509114006",
+                    "Payment was unsuccessful: \n" + payment);
         }
     }
 
@@ -85,21 +85,6 @@ public class PaymentServiceImpl implements PaymentService {
         return payment;
     }
 
-    private BigDecimal calculateRentalAmount(Rental rental, Payment.Type paymentType) {
-        long daysBetween = Duration.between(rental.getRentalDate(),
-                rental.getReturnDate()).toDays();
-        BigDecimal rentalAmount = DAILY_FEE.multiply(BigDecimal.valueOf(daysBetween));
-        if (paymentType == Payment.Type.FINE
-                && rental.getActualReturnDate().isAfter(rental.getReturnDate())) {
-            long overdueDays = Duration.between(rental.getReturnDate(),
-                    rental.getActualReturnDate()).toDays();
-            BigDecimal fineAmount = DAILY_FEE.multiply(FINE_MULTIPLIER)
-                    .multiply(BigDecimal.valueOf(overdueDays));
-            rentalAmount = rentalAmount.add(fineAmount);
-        }
-        return rentalAmount;
-    }
-
     @Override
     public List<Payment> findByUserId(Long userId) {
         List<Payment> payments = new ArrayList<>();
@@ -117,5 +102,22 @@ public class PaymentServiceImpl implements PaymentService {
         return findByUserId(userId).stream()
                 .filter(p -> p.getStatus() == status)
                 .collect(Collectors.toList());
+    }
+
+    private BigDecimal calculateRentalAmount(Rental rental, Payment.Type paymentType) {
+        long daysBetween = Duration.between(rental.getRentalDate(),
+                rental.getReturnDate()).toDays();
+        BigDecimal rentalAmount = paymentRepository.getDailyFeeByRentalId(rental.getId())
+                .multiply(BigDecimal.valueOf(daysBetween));
+        if (paymentType == Payment.Type.FINE
+                && rental.getActualReturnDate().isAfter(rental.getReturnDate())) {
+            long overdueDays = Duration.between(rental.getReturnDate(),
+                    rental.getActualReturnDate()).toDays();
+            BigDecimal fineAmount = paymentRepository.getDailyFeeByRentalId(rental.getId())
+                    .multiply(FINE_MULTIPLIER)
+                    .multiply(BigDecimal.valueOf(overdueDays));
+            rentalAmount = rentalAmount.add(fineAmount);
+        }
+        return rentalAmount;
     }
 }
