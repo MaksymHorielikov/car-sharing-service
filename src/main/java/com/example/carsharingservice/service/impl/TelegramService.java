@@ -99,7 +99,7 @@ public class TelegramService extends TelegramLongPollingBot
     public void notifyAllUsersWhereActualReturnDateIsAfterReturnDate() {
         List<Rental> rentals = rentalService.findAllByActualReturnDateAfterReturnDate();
         if (rentals.size() == 0) {
-            sendMessage(botConfig.getAdminId(),"No rentals overdue today!");
+            sendMessage(botConfig.getAdminId(), "No rentals overdue today!");
         }
         for (Rental rental : rentals) {
             sendMessage(userService.findById(rental.getUserId()).getChatId(),
