@@ -20,11 +20,7 @@ public interface RentalService {
 
     LocalDateTime getActualReturnDate(Long rentalId);
 
-    List<Rental> findAllByUserId(Long id);
-
     List<Rental> findAllByUserId(Long userId, PageRequest pageRequest);
-
-    List<Rental> findAllByUserId(Long id);
 
     void updateActualReturnDate(Long id);
 
