@@ -6,13 +6,11 @@ import com.example.carsharingservice.repository.PaymentRepository;
 import com.example.carsharingservice.repository.RentalRepository;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.PaymentService;
-import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.StripePaymentService;
 import com.stripe.model.checkout.Session;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -26,7 +24,6 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final RentalRepository rentalRepository;
     private final NotificationService notificationService;
-    private final RentalService rentalService;
 
     @Override
     public Payment save(Long rentalId) {
@@ -103,14 +100,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<Payment> findByUserId(Long userId) {
-        List<Payment> payments = new ArrayList<>();
-        List<Long> rentalIds = rentalService.findAllByUserId(userId).stream()
-                .map(Rental::getId)
-                .toList();
-        for (Long id : rentalIds) {
-            payments.add(paymentRepository.findByRentalId(id));
-        }
-        return payments;
+        return paymentRepository.findAllByUserId(userId);
     }
 
     @Override
