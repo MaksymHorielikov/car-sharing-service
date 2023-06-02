@@ -78,13 +78,16 @@ public class TelegramService extends TelegramLongPollingBot
 
     @Override
     public void sendMessageAboutNewRental(RentalResponseDto rental) {
-        sendMessage(userService.findById(rental.getUserId()).getChatId(),
-                "New rental was added with ID: "
-                + rental.getId() + "\n"
-                + "Car brand:" + carService.findById(rental.getCarId())
-                .getBrand() + "\n"
-                + "Rental date: " + rental.getRentalDate() + "\n"
-                + "Return date: " + rental.getReturnDate());
+        User userById = userService.findById(rental.getUserId());
+        if (userById.getChatId() != null) {
+            sendMessage(userById.getChatId(),
+                    "New rental was added with ID: "
+                            + rental.getId() + "\n"
+                            + "Car brand:" + carService.findById(rental.getCarId())
+                            .getBrand() + "\n"
+                            + "Rental date: " + rental.getRentalDate() + "\n"
+                            + "Return date: " + rental.getReturnDate());
+        }
     }
 
     private boolean matchPattern(String email) {
@@ -95,7 +98,7 @@ public class TelegramService extends TelegramLongPollingBot
         return matcher.matches();
     }
 
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "10 * * * * ?")
     public void notifyAllUsersWhereActualReturnDateIsAfterReturnDate() {
         List<Rental> rentals = rentalService.findAllByActualReturnDateAfterReturnDate();
         if (rentals.size() == 0) {
