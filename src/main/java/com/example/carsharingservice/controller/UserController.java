@@ -7,7 +7,6 @@ import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
 
     @GetMapping("/me")
     public UserResponseDto get(Authentication authentication) {
@@ -36,7 +34,6 @@ public class UserController {
         User user = userMapper.toModel(userRequestDto);
         user.setId(userId);
         user.setRole(userService.findById(userId).getRole());
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userMapper.toDto(userService.update(user));
     }
 

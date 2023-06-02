@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .userDetailsService(userDetailsService)
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
                                  HttpMethod.POST, "/register", "/login").permitAll()
+                                .requestMatchers("/test", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
                                 .requestMatchers("/users/me")
                                 .hasAnyRole(User.Role.MANAGER.name(), User.Role.CUSTOMER.name())
                                 .requestMatchers(HttpMethod.PUT, "/users/{id}/role")
