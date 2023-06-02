@@ -10,6 +10,10 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface RentalRepository extends JpaRepository<Rental, Long> {
+    List<Rental> findAllByUserId(Long id);
+
+    List<Rental> findAllByUserId(Long userId, PageRequest pageRequest);
+
     @Query("SELECT r.rentalDate FROM Rental r WHERE r.id = :id")
     Optional<LocalDateTime> findRentalDateById(@Param("id") Long id);
 

@@ -6,5 +6,5 @@ import com.stripe.model.checkout.Session;
 public interface StripePaymentService {
     Session createSession(Payment payment);
 
-    boolean checkPaymentStatus(String sessionId);
+    String checkPaymentStatus(String sessionId);
 }

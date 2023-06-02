@@ -2,18 +2,15 @@ package com.example.carsharingservice.service.impl;
 
 import com.example.carsharingservice.model.Payment;
 import com.example.carsharingservice.model.Rental;
-import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.repository.PaymentRepository;
 import com.example.carsharingservice.repository.RentalRepository;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.PaymentService;
-import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.StripePaymentService;
-import com.example.carsharingservice.service.UserService;
 import com.stripe.model.checkout.Session;
+import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -27,22 +24,35 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final RentalRepository rentalRepository;
     private final NotificationService notificationService;
-    private final RentalService rentalService;
-    private final UserService userService;
 
     @Override
-    public Payment save(Payment payment) {
-        Rental rental = rentalRepository.findById(payment.getRentalId())
+    public Payment save(Long rentalId) {
+        Rental rental = rentalRepository.findById(rentalId)
                 .orElseThrow(() -> new RuntimeException("Can't find rental by id: "
-                        + payment.getRentalId()));
-
+                        + rentalId));
+        Payment payment = new Payment();
+        payment.setRentalId(rentalId);
+        payment.setType(checkPaymentType(rental));
         BigDecimal rentalAmount = calculateRentalAmount(rental, payment.getType());
         payment.setAmount(rentalAmount);
         Session session = stripePaymentService.createSession(payment);
+        payment.setStatus(Payment.Status.PENDING);
         payment.setSessionUrl(session.getUrl());
         payment.setSessionId(session.getId());
-        paymentRepository.save(payment);
-        return payment;
+        return paymentRepository.save(payment);
+    }
+
+    @Override
+    public Payment findById(Long id) {
+        return paymentRepository.findById(id).orElseThrow(() ->
+                new RuntimeException("Can't find payment by id: " + id));
+    }
+
+    @Override
+    public Payment update(Payment payment) {
+        paymentRepository.findById(payment.getId()).orElseThrow(() ->
+                new EntityNotFoundException("Can't find payment with id " + payment.getId()));
+        return paymentRepository.saveAndFlush(payment);
     }
 
     @Override
@@ -54,12 +64,9 @@ public class PaymentServiceImpl implements PaymentService {
                             + payment.getRentalId()));
             if (rental != null) {
                 payment.setStatus(Payment.Status.PAID);
-                rentalRepository.save(rental);
-                User user = userService.findById(rental.getUserId());
-                if (user.getChatId() != null) {
-                    notificationService.sendMessage(user.getChatId(), "Payment was successful: \n"
-                            + payment);
-                }
+                paymentRepository.save(payment);
+                notificationService.sendMessage("509114006","Payment was successful: \n"
+                        + payment);
             }
         }
     }
@@ -70,10 +77,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment != null) {
             payment.setStatus(Payment.Status.PENDING);
             paymentRepository.save(payment);
-            Rental rental = rentalRepository.findById(payment.getRentalId()).orElseThrow(() ->
-                    new RuntimeException("Can`t find rental by id: " + payment.getRentalId()));
-            User user = userService.findById(rental.getUserId());
-            notificationService.sendMessage(user.getChatId(),
+            notificationService.sendMessage("509114006",
                     "Payment was unsuccessful: \n" + payment);
         }
     }
@@ -96,14 +100,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public List<Payment> findByUserId(Long userId) {
-        List<Payment> payments = new ArrayList<>();
-        List<Long> rentalIds = rentalService.findAllByUserId(userId).stream()
-                .map(Rental::getId)
-                .toList();
-        for (Long id : rentalIds) {
-            payments.add(paymentRepository.findByRentalId(id));
-        }
-        return payments;
+        return paymentRepository.findAllByUserId(userId);
     }
 
     @Override
@@ -111,6 +108,11 @@ public class PaymentServiceImpl implements PaymentService {
         return findByUserId(userId).stream()
                 .filter(p -> p.getStatus() == status)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public String checkPaymentStatus(String sessionId) {
+        return stripePaymentService.checkPaymentStatus(sessionId);
     }
 
     private BigDecimal calculateRentalAmount(Rental rental, Payment.Type paymentType) {
@@ -129,4 +131,17 @@ public class PaymentServiceImpl implements PaymentService {
         }
         return rentalAmount;
     }
+
+    private Payment.Type checkPaymentType(Rental rental) {
+        long expectedDaysBetween = Duration.between(rental.getRentalDate(),
+                rental.getReturnDate()).toDays();
+        long daysBetween = Duration.between(rental.getRentalDate(),
+                rental.getActualReturnDate()).toDays();
+        if (expectedDaysBetween >= daysBetween) {
+            return Payment.Type.PAYMENT;
+        } else {
+            return Payment.Type.FINE;
+        }
+    }
+
 }
