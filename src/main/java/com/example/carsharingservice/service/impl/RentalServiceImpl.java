@@ -64,11 +64,6 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    public List<Rental> findAllByUserId(Long id) {
-        return rentalRepository.findAllByUserId(id);
-    }
-
-    @Override
     public List<Rental> findAllByUserId(Long userId, PageRequest pageRequest) {
         return rentalRepository.findAllByUserId(userId, pageRequest);
     }
