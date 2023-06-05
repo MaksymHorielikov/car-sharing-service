@@ -35,7 +35,8 @@ public class SecurityConfig {
                 .userDetailsService(userDetailsService)
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
                                  HttpMethod.POST, "/register", "/login").permitAll()
-                                .requestMatchers("/test", "/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**").permitAll()
+                                .requestMatchers("/test", "/swagger-ui/**", "/swagger-ui.html",
+                                        "/v3/api-docs/**").permitAll()
                                 .requestMatchers("/users/me")
                                 .hasAnyRole(User.Role.MANAGER.name(), User.Role.CUSTOMER.name())
                                 .requestMatchers(HttpMethod.PUT, "/users/{id}/role")
@@ -64,7 +65,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/payments")
                                 .hasAnyRole(User.Role.MANAGER.name(),
                                         User.Role.CUSTOMER.name())
-                                .requestMatchers(HttpMethod.GET, "/payments/success", "/payments/cancel")
+                                .requestMatchers(HttpMethod.GET, "/payments/success",
+                                        "/payments/cancel")
                                 .hasRole(User.Role.CUSTOMER.name())
                                 .requestMatchers(HttpMethod.POST, "/payments/{paymentId}/renew")
                                 .hasAnyRole(User.Role.MANAGER.name(), User.Role.CUSTOMER.name())
