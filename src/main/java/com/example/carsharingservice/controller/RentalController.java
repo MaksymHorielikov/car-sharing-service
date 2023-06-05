@@ -9,9 +9,8 @@ import com.example.carsharingservice.service.CarService;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.UserService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import jakarta.validation.Valid;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -37,8 +36,8 @@ public class RentalController {
     private final UserService userService;
 
     @PostMapping
-    @ApiOperation(value = "Create a new rental")
-    public RentalResponseDto add(@RequestBody @Valid RentalRequestDto rentalDto) {
+    @Operation(summary = "Create a new rental")
+    public RentalResponseDto add(@RequestBody RentalRequestDto rentalDto) {
         RentalResponseDto rentalResponseDto =
                 rentalMapper.toDto(rentalService.save(rentalMapper.toModel(rentalDto)));
         carService.decreaseInventory(rentalResponseDto.getCarId(), 1);
@@ -47,16 +46,16 @@ public class RentalController {
     }
 
     @GetMapping
-    @ApiOperation(value = "Get all rentals by userId and status")
+    @Operation(summary = "Get all rentals by userId and status")
     public List<RentalResponseDto> getByUserAndActive(
             @RequestParam("user_id")
-                @ApiParam(defaultValue = "user id") Long userId,
+                @Parameter(description = "user id") Long userId,
             @RequestParam("is_active")
-                @ApiParam(defaultValue = "active rental or not") boolean isActive,
+                @Parameter(description = "active rental or not") boolean isActive,
             @RequestParam(defaultValue = "10")
-                @ApiParam(defaultValue = "default value is '10'") Integer count,
+                @Parameter(description = "default value is '10'") Integer count,
             @RequestParam(defaultValue = "0")
-                @ApiParam(defaultValue = "default value is '0'") Integer page) {
+                @Parameter(description = "default value is '0'") Integer page) {
         PageRequest pageRequest = PageRequest.of(page, count);
         if (isActive) {
             return rentalService.findAllByUserId(userId, pageRequest)
@@ -73,8 +72,9 @@ public class RentalController {
     }
 
     @GetMapping("/{id}")
-    @ApiOperation(value = "Get by id")
-    public RentalResponseDto getById(Authentication authentication, @PathVariable Long id) {
+    @Operation(summary = "Get by id")
+    public RentalResponseDto getById(Authentication authentication,
+                                     @PathVariable Long id) {
         User user = userService.findByEmail(authentication.getName()).get();
         if (user.getRole() == User.Role.CUSTOMER && !Objects.equals(user.getId(),
                 rentalService.getById(id).getUserId())) {
@@ -84,7 +84,7 @@ public class RentalController {
     }
 
     @PostMapping("/{id}/return")
-    @ApiOperation(value = "Set the date of car return")
+    @Operation(summary = "Set the date of car return")
     public RentalResponseDto setActualDate(@PathVariable Long id) {
         RentalResponseDto rentalResponseDto = rentalMapper.toDto(rentalService.getById(id));
         rentalService.updateActualReturnDate(id);

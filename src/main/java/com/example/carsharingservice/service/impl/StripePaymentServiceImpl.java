@@ -20,12 +20,12 @@ public class StripePaymentServiceImpl implements StripePaymentService {
         String baseUrl = UriComponentsBuilder.fromHttpUrl("http://localhost:8082")
                 .path("/payments")
                 .toUriString();
-//        String successUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
-//                .path(stripeConfig.getSuccessUrl())
-//                .toUriString();
-//        String cancelUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
-//                .path(stripeConfig.getCancelUrl())
-//                .toUriString();
+        //        String successUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
+        //                .path(stripeConfig.getSuccessUrl())
+        //                .toUriString();
+        //        String cancelUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
+        //                .path(stripeConfig.getCancelUrl())
+        //                .toUriString();
         SessionCreateParams.LineItem.PriceData.ProductData productData
                 = SessionCreateParams.LineItem.PriceData.ProductData.builder()
                 .setName("Car rental")

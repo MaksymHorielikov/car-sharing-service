@@ -18,12 +18,13 @@ public class RentalServiceImpl implements RentalService {
 
     @Override
     public Rental save(Rental rental) {
-//        Long userId = rental.getUserId();
-//        List<Payment> pendingPayments = paymentRepository.findByUserIdAndStatus(userId,
-//                Payment.Status.PENDING);
-//        if (!pendingPayments.isEmpty()) {
-//            throw new RuntimeException("User with id: " + userId + " has pending payments.");
-//        }
+        //        Long userId = rental.getUserId();
+        //        List<Payment> pendingPayments = paymentRepository.findByUserIdAndStatus(userId,
+        //                Payment.Status.PENDING);
+        //        if (!pendingPayments.isEmpty()) {
+        //            throw new RuntimeException("User with id: "
+        //            + userId + " has pending payments.");
+        //        }
         return rentalRepository.save(rental);
     }
 

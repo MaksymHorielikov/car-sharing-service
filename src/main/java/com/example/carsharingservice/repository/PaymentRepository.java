@@ -3,7 +3,6 @@ package com.example.carsharingservice.repository;
 import com.example.carsharingservice.model.Payment;
 import java.math.BigDecimal;
 import java.util.List;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -18,7 +17,8 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
             nativeQuery = true)
     BigDecimal getDailyFeeByRentalId(Long id);
 
-    @Query(value = "SELECT p.id, p.status, p.type, p.rental_id, p.amount FROM payments p JOIN rentals r ON r.id = p.rental_id WHERE r.user_id=?1",
+    @Query(value = "SELECT p.id, p.status, p.type, p.rental_id, p.amount FROM payments p "
+            + "JOIN rentals r ON r.id = p.rental_id WHERE r.user_id=?1",
             nativeQuery = true)
     List<Payment> findAllByUserId(Long userId);
 }
