@@ -1,6 +1,7 @@
 package com.example.carsharingservice.service;
 
 import com.example.carsharingservice.model.Payment;
+import com.stripe.model.checkout.Session;
 import java.util.List;
 
 public interface PaymentService {
@@ -21,4 +22,8 @@ public interface PaymentService {
     List<Payment> findByUserIdAndStatus(Long userId, Payment.Status status);
 
     String checkPaymentStatus(String sessionId);
+
+    void paymentConfirmation(Session session);
+
+    void sessionExpired(Session session);
 }

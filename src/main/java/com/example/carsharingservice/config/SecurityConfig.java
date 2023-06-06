@@ -34,7 +34,8 @@ public class SecurityConfig {
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
                 .userDetailsService(userDetailsService)
                 .authorizeHttpRequests(auth -> auth.requestMatchers(
-                                 HttpMethod.POST, "/register", "/login").permitAll()
+                                 HttpMethod.POST, "/register", "/login",
+                                "/payments/webhook").permitAll()
                                 .requestMatchers("/test", "/swagger-ui/**", "/swagger-ui.html",
                                         "/v3/api-docs/**").permitAll()
                                 .requestMatchers("/users/me")

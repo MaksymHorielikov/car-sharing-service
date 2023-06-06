@@ -17,4 +17,7 @@ public class StripeConfig {
     private String successUrl;
     @Value("${stripe.cancel.url}")
     private String cancelUrl;
+    // This is your Stripe CLI webhook secret for testing your endpoint locally.
+    @Value("${stripe.secret.endpoint}")
+    private String endpointSecret;
 }

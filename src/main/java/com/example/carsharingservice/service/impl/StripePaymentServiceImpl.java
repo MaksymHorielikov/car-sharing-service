@@ -9,7 +9,6 @@ import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.web.util.UriComponentsBuilder;
 
 @AllArgsConstructor
 @Service
@@ -17,15 +16,7 @@ public class StripePaymentServiceImpl implements StripePaymentService {
     private final StripeConfig stripeConfig;
 
     public Session createSession(Payment payment) {
-        String baseUrl = UriComponentsBuilder.fromHttpUrl("http://localhost:8082")
-                .path("/payments")
-                .toUriString();
-        //        String successUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
-        //                .path(stripeConfig.getSuccessUrl())
-        //                .toUriString();
-        //        String cancelUrl = UriComponentsBuilder.fromHttpUrl(baseUrl)
-        //                .path(stripeConfig.getCancelUrl())
-        //                .toUriString();
+        Stripe.apiKey = stripeConfig.getSecretKey();
         SessionCreateParams.LineItem.PriceData.ProductData productData
                 = SessionCreateParams.LineItem.PriceData.ProductData.builder()
                 .setName("Car rental")
@@ -43,11 +34,10 @@ public class StripePaymentServiceImpl implements StripePaymentService {
         SessionCreateParams params = SessionCreateParams.builder()
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setCancelUrl(stripeConfig.getCancelUrl())
-                .setSuccessUrl(stripeConfig.getSuccessUrl())
+                .setSuccessUrl("https://example.com/success")
+                .setCancelUrl("https://example.com/cancel")
                 .addLineItem(lineItem)
                 .build();
-
         try {
             return Session.create(params);
         } catch (StripeException e) {
