@@ -30,12 +30,9 @@ public class Car {
     private boolean deleted;
 
     public enum Type {
-        SEDAN("SEDAN"),
-        SUV("SUV"),
-        HATCHBACK("HATCHBACK"),
-        UNIVERSAL("UNIVERSAL");
-
-        Type(String value) {
-        }
+        SEDAN,
+        SUV,
+        HATCHBACK,
+        UNIVERSAL
     }
 }

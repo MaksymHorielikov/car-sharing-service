@@ -1,12 +1,17 @@
 package com.example.carsharingservice.controller;
 
 import com.example.carsharingservice.dto.mapper.UserMapper;
+import com.example.carsharingservice.dto.request.LoginRequestDto;
 import com.example.carsharingservice.dto.request.UserRequestDto;
 import com.example.carsharingservice.dto.response.UserResponseDto;
 import com.example.carsharingservice.exception.AuthenticationException;
 import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.security.AuthenticationService;
 import com.example.carsharingservice.security.jwt.JwtTokenProvider;
+import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.Valid;
+import java.time.LocalDateTime;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
@@ -26,22 +31,27 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
-    public UserResponseDto register(@RequestBody UserRequestDto userRequestDto) {
+    @Operation(summary = "Registration of a new user (default role a CUSTOMER)")
+    public UserResponseDto register(@RequestBody @Valid UserRequestDto userRequestDto) {
         return userMapper.toDto(authenticationService.register(userRequestDto));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<Object> login(@RequestBody UserRequestDto userRequestDto) {
+    @Operation(summary = "Get a JWT token for registration user")
+    public ResponseEntity<Object> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
         User user;
         try {
             user = authenticationService
-                    .login(userRequestDto.getEmail(), userRequestDto.getPassword());
+                    .login(loginRequestDto.getEmail(), loginRequestDto.getPassword());
             String token = jwtTokenProvider.createToken(user.getEmail(),
                     List.of(user.getRole().name()));
-            return new ResponseEntity<>(Map.of("token", token), HttpStatus.OK);
+            Map<String, Object> body = new LinkedHashMap<>();
+            body.put("timestamp", LocalDateTime.now().toString());
+            body.put("token", token);
+            body.put("status", HttpStatus.OK.value());
+            return new ResponseEntity<>(body, HttpStatus.OK);
         } catch (AuthenticationException e) {
-            return new ResponseEntity<>("Invalid username or password!",
-                    HttpStatus.BAD_REQUEST);
+            throw new RuntimeException("Invalid email or password!");
         }
     }
 }

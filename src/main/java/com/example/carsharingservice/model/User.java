@@ -27,11 +27,7 @@ public class User {
     private String chatId;
 
     public enum Role {
-        MANAGER("MANAGER"),
-        CUSTOMER("CUSTOMER");
-        private String value;
-        Role(String value) {
-            this.value = value;
-        }
+        MANAGER,
+        CUSTOMER
     }
 }
