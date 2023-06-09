@@ -42,15 +42,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(User user) {
-        User userUpdate = userRepository.findById(user.getId()).orElseThrow(() ->
+        userRepository.findById(user.getId()).orElseThrow(() ->
                 new EntityNotFoundException("Not found user with id " + user.getId()
                         + " for update"));
-        userUpdate.setFirstName(user.getFirstName());
-        userUpdate.setLastName(user.getLastName());
-        userUpdate.setEmail(user.getEmail());
-        userUpdate.setRole(user.getRole());
-        userUpdate.setPassword(user.getPassword());
-        userUpdate.setChatId(user.getChatId());
-        return userRepository.save(userUpdate);
+        return userRepository.save(user);
     }
 }
