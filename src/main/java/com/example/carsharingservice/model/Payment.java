@@ -26,6 +26,25 @@ public class Payment {
     private String sessionId;
     private BigDecimal amount;
 
+    public Payment() {
+    }
+
+    public Payment(Long id,
+                   Status status,
+                   Type type,
+                   Long rentalId,
+                   String sessionUrl,
+                   String sessionId,
+                   BigDecimal amount) {
+        this.id = id;
+        this.status = status;
+        this.type = type;
+        this.rentalId = rentalId;
+        this.sessionUrl = sessionUrl;
+        this.sessionId = sessionId;
+        this.amount = amount;
+    }
+
     public enum Status {
         PENDING("PENDING"), PAID("PAID"), EXPIRED("EXPIRED");
         private final String value;
