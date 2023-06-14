@@ -7,6 +7,8 @@ import com.example.carsharingservice.model.Car;
 import com.example.carsharingservice.service.CarService;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import io.swagger.annotations.ApiOperation;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,11 +27,13 @@ public class CarController {
     private final DtoMapper<Car,CarRequestDto, CarResponseDto> mapper;
 
     @PostMapping()
+    @ApiOperation(value = "Create a new car")
     public CarResponseDto create(@RequestBody CarRequestDto carRequestDto) {
         return mapper.toDto(carService.createCar(mapper.toModel(carRequestDto)));
     }
 
     @GetMapping()
+    @ApiOperation(value = "Get all cars")
     public List<CarResponseDto> getAll() {
         return carService.findAll()
                 .stream()
@@ -38,11 +42,13 @@ public class CarController {
     }
 
     @GetMapping("/{id}")
+    @ApiOperation(value = "Get the car by id")
     public CarResponseDto getById(@PathVariable Long id) {
         return mapper.toDto(carService.findById(id));
     }
 
     @PutMapping("/{id}")
+    @ApiOperation(value = "Update the car")
     public CarResponseDto update(@PathVariable Long id, @RequestBody CarRequestDto carRequestDto) {
         Car car = mapper.toModel(carRequestDto);
         car.setId(id);
@@ -50,6 +56,7 @@ public class CarController {
     }
 
     @DeleteMapping("/{id}")
+    @ApiOperation(value = "Delete the car")
     public void delete(@PathVariable Long id) {
         carService.deleteById(id);
     }
