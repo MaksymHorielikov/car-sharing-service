@@ -27,20 +27,13 @@ public class Payment {
     private BigDecimal amount;
 
     public enum Status {
-        PENDING("PENDING"), PAID("PAID"), EXPIRED("EXPIRED");
-        private final String value;
-        Status(String value) {
-            this.value = value;
-        }
+        PENDING,
+        PAID,
+        EXPIRED
     }
 
     public enum Type {
-        PAYMENT("PAYMENT"),
-        FINE("FINE");
-        private final String value;
-
-        Type(String value) {
-            this.value = value;
-        }
+        PAYMENT,
+        FINE
     }
 }

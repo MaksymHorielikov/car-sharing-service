@@ -8,4 +8,6 @@ public interface AuthenticationService {
     User register(UserRequestDto userRequestDto);
 
     User login(String login, String password) throws AuthenticationException;
+
+    String encodePassword(String password);
 }

@@ -34,4 +34,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
         throw new AuthenticationException("Incorrect username or password!!!");
     }
+
+    @Override
+    public String encodePassword(String password) {
+        return passwordEncoder.encode(password);
+    }
 }
