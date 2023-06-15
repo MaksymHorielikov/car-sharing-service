@@ -144,4 +144,19 @@ public class PaymentServiceImpl implements PaymentService {
         }
     }
 
+    @Override
+    public void paymentConfirmation(Session session) {
+        String sessionId = session.getId();
+        Payment bySessionId = paymentRepository.findBySessionId(sessionId);
+        bySessionId.setStatus(Payment.Status.PAID);
+        update(bySessionId);
+    }
+
+    @Override
+    public void sessionExpired(Session session) {
+        String sessionId = session.getId();
+        Payment bySessionId = paymentRepository.findBySessionId(sessionId);
+        bySessionId.setStatus(Payment.Status.EXPIRED);
+        update(bySessionId);
+    }
 }

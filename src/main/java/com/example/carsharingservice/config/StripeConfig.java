@@ -17,4 +17,6 @@ public class StripeConfig {
     private String successUrl;
     @Value("${stripe.cancel.url}")
     private String cancelUrl;
+    @Value("${stripe.secret.endpoint}")
+    private String endpointSecret;
 }
