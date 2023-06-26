@@ -5,17 +5,14 @@ import com.example.carsharingservice.dto.response.RentalResponseDto;
 import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.service.CarService;
 import com.example.carsharingservice.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
+@AllArgsConstructor
 @Component
 public class RentalMapper implements DtoMapper<Rental, RentalRequestDto, RentalResponseDto> {
     private CarService carService;
     private UserService userService;
-
-    public RentalMapper(CarService carService, UserService userService) {
-        this.carService = carService;
-        this.userService = userService;
-    }
 
     @Override
     public Rental toModel(RentalRequestDto requestDto) {
