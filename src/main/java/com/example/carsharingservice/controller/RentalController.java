@@ -77,7 +77,7 @@ public class RentalController {
                                      @PathVariable Long id) {
         User user = userService.findByEmail(authentication.getName()).get();
         if (user.getRole() == User.Role.CUSTOMER && !Objects.equals(user.getId(),
-                rentalService.getById(id).getUserId())) {
+                rentalService.getById(id).getUser().getId())) {
             throw new RuntimeException("Can't get by this id: " + id);
         }
         return rentalMapper.toDto(rentalService.getById(id));

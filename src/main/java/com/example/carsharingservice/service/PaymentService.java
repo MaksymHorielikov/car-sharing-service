@@ -18,7 +18,5 @@ public interface PaymentService {
 
     List<Payment> findByUserId(Long userId);
 
-    List<Payment> findByUserIdAndStatus(Long userId, Payment.Status status);
-
     String checkPaymentStatus(String sessionId);
 }

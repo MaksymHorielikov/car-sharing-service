@@ -12,7 +12,6 @@ import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,7 +30,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .orElseThrow(() -> new RuntimeException("Can't find rental by id: "
                         + rentalId));
         Payment payment = new Payment();
-        payment.setRentalId(rentalId);
+        payment.setRental(rentalRepository.getReferenceById(rentalId));
         payment.setType(checkPaymentType(rental));
         BigDecimal rentalAmount = calculateRentalAmount(rental, payment.getType());
         payment.setAmount(rentalAmount);
@@ -59,9 +58,9 @@ public class PaymentServiceImpl implements PaymentService {
     public void handleSuccess(String sessionId) {
         Payment payment = paymentRepository.findBySessionId(sessionId);
         if (payment != null) {
-            Rental rental = rentalRepository.findById(payment.getRentalId()).orElseThrow(() ->
+            Rental rental = rentalRepository.findById(payment.getRental().getId()).orElseThrow(() ->
                     new RuntimeException("Can't find rental by payment id: "
-                            + payment.getRentalId()));
+                            + payment.getRental().getId()));
             if (rental != null) {
                 payment.setStatus(Payment.Status.PAID);
                 paymentRepository.save(payment);
@@ -104,13 +103,6 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public List<Payment> findByUserIdAndStatus(Long userId, Payment.Status status) {
-        return findByUserId(userId).stream()
-                .filter(p -> p.getStatus() == status)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public String checkPaymentStatus(String sessionId) {
         return stripePaymentService.checkPaymentStatus(sessionId);
     }
@@ -139,9 +131,8 @@ public class PaymentServiceImpl implements PaymentService {
                 rental.getActualReturnDate()).toDays();
         if (expectedDaysBetween >= daysBetween) {
             return Payment.Type.PAYMENT;
-        } else {
-            return Payment.Type.FINE;
         }
+        return Payment.Type.FINE;
     }
 
 }

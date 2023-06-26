@@ -18,13 +18,6 @@ public class RentalServiceImpl implements RentalService {
 
     @Override
     public Rental save(Rental rental) {
-        //        Long userId = rental.getUserId();
-        //        List<Payment> pendingPayments = paymentRepository.findByUserIdAndStatus(userId,
-        //                Payment.Status.PENDING);
-        //        if (!pendingPayments.isEmpty()) {
-        //            throw new RuntimeException("User with id: "
-        //            + userId + " has pending payments.");
-        //        }
         return rentalRepository.save(rental);
     }
 
@@ -36,32 +29,6 @@ public class RentalServiceImpl implements RentalService {
     @Override
     public void delete(Long id) {
         rentalRepository.deleteById(id);
-    }
-
-    @Override
-    public List<Rental> findAll() {
-        return rentalRepository.findAll();
-    }
-    
-    @Override
-    public LocalDateTime getRentalDate(Long rentalId) {
-        return rentalRepository.findRentalDateById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Rental with id "
-                        + rentalId + " not found"));
-    }
-
-    @Override
-    public LocalDateTime getReturnDate(Long rentalId) {
-        return rentalRepository.findReturnDateById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Rental with id "
-                        + rentalId + " not found"));
-    }
-
-    @Override
-    public LocalDateTime getActualReturnDate(Long rentalId) {
-        return rentalRepository.findActualReturnDateById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Rental with id "
-                        + rentalId + " not found"));
     }
 
     @Override
