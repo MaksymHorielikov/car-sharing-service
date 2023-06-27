@@ -26,6 +26,26 @@ public class User {
     private Role role;
     private String chatId;
 
+    public User() {
+    }
+
+    public User(String email, String firstName, String lastName, Role role) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.role = role;
+    }
+
+    public User(Long id, String email, String firstName,
+                String lastName, String password, Role role) {
+        this.id = id;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.role = role;
+    }
+
     public enum Role {
         MANAGER,
         CUSTOMER

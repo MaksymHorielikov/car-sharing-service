@@ -25,4 +25,31 @@ public class Rental {
     private Long carId;
     private Long userId;
     private boolean deleted;
+
+    public Rental() {
+    }
+
+    public Rental(LocalDateTime rentalDate,
+                  LocalDateTime returnDate,
+                  LocalDateTime actualReturnDate,
+                  Long carId,
+                  Long userId
+    ) {
+        this.rentalDate = rentalDate;
+        this.returnDate = returnDate;
+        this.actualReturnDate = actualReturnDate;
+        this.carId = carId;
+        this.userId = userId;
+    }
+
+    public Rental(Long id,
+                  LocalDateTime rentalDate,
+                  LocalDateTime returnDate,
+                  LocalDateTime actualReturnDate,
+                  Long carId,
+                  Long userId
+    ) {
+        this(rentalDate, returnDate, actualReturnDate, carId, userId);
+        this.id = id;
+    }
 }

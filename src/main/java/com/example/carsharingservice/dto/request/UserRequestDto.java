@@ -13,4 +13,11 @@ public class UserRequestDto {
     private String lastName;
     @NotBlank(message = "cannot blank")
     private String password;
+
+    public UserRequestDto(String email, String firstName, String lastName, String password) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+    }
 }

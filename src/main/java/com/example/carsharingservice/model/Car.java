@@ -21,13 +21,40 @@ public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String model;
     private String brand;
+    private String model;
     @Enumerated(EnumType.STRING)
     private Type type;
     private Integer inventory;
     private BigDecimal dailyFee;
     private boolean deleted;
+
+    public Car() {
+    }
+
+    public Car(String brand,
+               String model,
+               Type type,
+               Integer inventory,
+               BigDecimal dailyFee
+    ) {
+        this.model = model;
+        this.brand = brand;
+        this.type = type;
+        this.inventory = inventory;
+        this.dailyFee = dailyFee;
+    }
+
+    public Car(Long id,
+               String brand,
+               String model,
+               Type type,
+               Integer inventory,
+               BigDecimal dailyFee
+    ) {
+        this(brand, model, type, inventory, dailyFee);
+        this.id = id;
+    }
 
     public enum Type {
         SEDAN,
