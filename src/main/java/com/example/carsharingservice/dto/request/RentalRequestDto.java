@@ -1,18 +1,16 @@
 package com.example.carsharingservice.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Min;
 import java.time.LocalDateTime;
 import lombok.Data;
 
 @Data
 public class RentalRequestDto {
-    @NotBlank(message = "cannot blank")
     private LocalDateTime rentalDate;
-    @NotBlank(message = "cannot blank")
     private LocalDateTime returnDate;
     private LocalDateTime actualReturnDate;
-    @NotBlank(message = "cannot blank")
+    @Min(1)
     private Long carId;
-    @NotBlank(message = "cannot blank")
+    @Min(1)
     private Long userId;
 }

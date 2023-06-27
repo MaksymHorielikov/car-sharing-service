@@ -87,8 +87,8 @@ public class RentalController {
     @PostMapping("/{id}/return")
     @Operation(summary = "Set the date of car return")
     public RentalResponseDto setActualDate(@PathVariable Long id) {
-        RentalResponseDto rentalResponseDto = rentalMapper.toDto(rentalService.getById(id));
         rentalService.updateActualReturnDate(id);
+        RentalResponseDto rentalResponseDto = rentalMapper.toDto(rentalService.getById(id));
         carService.increaseInventory(rentalResponseDto.getCarId(), 1);
         return rentalResponseDto;
     }

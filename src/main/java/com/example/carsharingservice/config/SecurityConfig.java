@@ -37,7 +37,7 @@ public class SecurityConfig {
                                  HttpMethod.POST, "/register", "/login",
                                 "/payments/webhook").permitAll()
                                 .requestMatchers("/test", "/swagger-ui/**", "/swagger-ui.html",
-                                        "/v3/api-docs/**").permitAll()
+                                        "/v3/api-docs/**", "/inject").permitAll()
                                 .requestMatchers("/users/me")
                                 .hasAnyRole(User.Role.MANAGER.name(), User.Role.CUSTOMER.name())
                                 .requestMatchers(HttpMethod.PUT, "/users/{id}/role")
