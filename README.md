@@ -19,7 +19,7 @@ Introducing the ultimate car-sharing app! Discover a wide range of vehicles, boo
 ## 📃 Structure
 * `controller` - contains controllers for endpoints with different access depending on the role
 * `config` - stores Spring and App configuration
-* `dao` - data access layer (repository) with CRUD methods in the database
+* `repository` - repository with CRUD methods in the database
 * `dto` - wrapper for model objects to unify the requests and responses in controllers
 * `exception` - custom exception class for DAO's exceptions 
 * `lib` - contains email and password validators with its annotations
