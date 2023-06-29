@@ -105,7 +105,7 @@ public class TelegramService extends TelegramLongPollingBot
             sendMessage(botConfig.getAdminId(), "No rentals overdue today!");
         }
         for (Rental rental : rentals) {
-            sendMessage(userService.findById(rental.getUserId()).getChatId(),
+            sendMessage(userService.findById(rental.getUser().getId()).getChatId(),
                     "Your car has to be "
                             + "returned, because your rental ended ");
         }

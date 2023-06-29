@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS `payments`
     `session_url` VARCHAR(500) NOT NULL,
     `session_id` VARCHAR(255) NOT NULL,
     `amount` DECIMAL(10, 2) NOT NULL,
+    `deleted` TINYINT(1) NOT NULL DEFAULT 0,
     FOREIGN KEY (`rental_id`) REFERENCES rentals(id)
 );
 
