@@ -35,7 +35,7 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void save_ValidRental_ReturnsSavedRental() {
+    void testSave() {
         Rental rental = createRental();
         when(rentalRepository.save(rental)).thenReturn(rental);
 
@@ -47,7 +47,7 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void getById_ExistingId_ReturnsRental() {
+    void testGetById() {
         Long id = 1L;
         Rental rental = createRental();
         when(rentalRepository.getReferenceById(id)).thenReturn(rental);
@@ -60,7 +60,7 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void delete_ExistingId_DeletesRental() {
+    void testDelete() {
         Long id = 1L;
         doNothing().when(rentalRepository).deleteById(id);
 
@@ -69,7 +69,7 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void findAll_ReturnsListOfRentals() {
+    void testFindAll() {
         List<Rental> rentals = Collections.singletonList(createRental());
         when(rentalRepository.findAll()).thenReturn(rentals);
 
@@ -81,7 +81,7 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void getRentalDate_ExistingRentalId_ReturnsRentalDate() {
+    void testGetRentalDate_ExistingRentalId() {
         Long rentalId = 1L;
         Rental rental = createRental();
         when(rentalRepository.findRentalDateById(rentalId)).thenReturn(Optional.of(rental.getRentalDate()));
@@ -94,7 +94,7 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void getRentalDate_NonExistingRentalId_ThrowsException() {
+    void testGetRentalDate_NonExistingRentalId() {
         Long rentalId = 1L;
         when(rentalRepository.findRentalDateById(rentalId)).thenReturn(Optional.empty());
 
@@ -103,7 +103,7 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void getReturnDate_ExistingRentalId_ReturnsReturnDate() {
+    void testGetReturnDate_ExistingRentalId() {
         Long rentalId = 1L;
         Rental rental = createRental();
         when(rentalRepository.findReturnDateById(rentalId)).thenReturn(Optional.of(rental.getReturnDate()));
@@ -116,7 +116,7 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void getReturnDate_NonExistingRentalId_ThrowsException() {
+    void testGetReturnDate_NonExistingRentalId() {
         Long rentalId = 1L;
         when(rentalRepository.findReturnDateById(rentalId)).thenReturn(Optional.empty());
 
@@ -125,7 +125,7 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void getActualReturnDate_ExistingRentalId_ReturnsActualReturnDate() {
+    void testGetActualReturnDate_ExistingRentalId() {
         Long rentalId = 1L;
         Rental rental = createRental();
         when(rentalRepository.findActualReturnDateById(rentalId)).thenReturn(Optional.of(rental.getActualReturnDate()));
@@ -138,7 +138,7 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void getActualReturnDate_NonExistingRentalId_ThrowsException() {
+    void testGetActualReturnDate_NonExistingRentalId() {
         Long rentalId = 1L;
         when(rentalRepository.findActualReturnDateById(rentalId)).thenReturn(Optional.empty());
 
@@ -147,7 +147,7 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void findAllByUserId_ExistingUserId_ReturnsListOfRentals() {
+    void testFindAllByUserId() {
         Long userId = 1L;
         List<Rental> rentals = Collections.singletonList(createRental());
         PageRequest pageRequest = PageRequest.of(0, 10);
@@ -161,7 +161,7 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void updateActualReturnDate_RentalWithNullActualReturnDate_SetsActualReturnDateAndSavesRental() {
+    void testUpdateActualReturnDate_RentalWithNullActualReturnDate() {
         Long rentalId = 1L;
         Rental rental = createRental();
         rental.setActualReturnDate(null);
@@ -175,7 +175,7 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void updateActualReturnDate_RentalWithNonNullActualReturnDate_ThrowsException() {
+    void testUpdateActualReturnDate_RentalWithNonNullActualReturnDate() {
         Long rentalId = 1L;
         Rental rental = createRental();
         rental.setActualReturnDate(LocalDateTime.now());
@@ -186,7 +186,7 @@ class RentalServiceImplTest {
     }
 
     @Test
-    void findAllByActualReturnDateAfterReturnDate_ReturnsListOfRentals() {
+    void testFindAllByActualReturnDateAfterReturnDate_ReturnsListOfRentals() {
         List<Rental> rentals = Collections.singletonList(createRental());
         when(rentalRepository.findAllByActualReturnDateAfterReturnDate()).thenReturn(rentals);
 

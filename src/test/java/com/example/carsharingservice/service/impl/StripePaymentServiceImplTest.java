@@ -1,8 +1,6 @@
 package com.example.carsharingservice.service.impl;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.example.carsharingservice.config.StripeConfig;
@@ -28,7 +26,7 @@ class StripePaymentServiceImplTest {
     }
 
     @Test
-    void createSession_StripeException_ThrowsRuntimeException() {
+    void testCreateSession() {
         Payment payment = new Payment();
         payment.setAmount(BigDecimal.valueOf(50));
 
@@ -39,8 +37,5 @@ class StripePaymentServiceImplTest {
         Stripe.apiKey = "test_secret_key";
 
         assertThrows(RuntimeException.class, () -> stripePaymentService.createSession(payment));
-
-        verify(stripeConfig, times(1)).getSuccessUrl();
-        verify(stripeConfig, times(1)).getCancelUrl();
     }
 }

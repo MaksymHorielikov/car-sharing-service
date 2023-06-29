@@ -41,8 +41,7 @@ public class Rental {
                   LocalDateTime returnDate,
                   LocalDateTime actualReturnDate,
                   Long carId,
-                  Long userId
-    ) {
+                  Long userId) {
         this.rentalDate = rentalDate;
         this.returnDate = returnDate;
         this.actualReturnDate = actualReturnDate;
@@ -55,8 +54,7 @@ public class Rental {
                   LocalDateTime returnDate,
                   LocalDateTime actualReturnDate,
                   Long carId,
-                  Long userId
-    ) {
+                  Long userId) {
         this(rentalDate, returnDate, actualReturnDate, carId, userId);
         this.id = id;
     }

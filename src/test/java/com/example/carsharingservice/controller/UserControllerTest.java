@@ -1,5 +1,6 @@
 package com.example.carsharingservice.controller;
 
+import com.example.carsharingservice.security.AuthenticationService;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.any;
@@ -27,16 +28,19 @@ public class UserControllerTest {
     private UserService userService;
 
     @Mock
+    private AuthenticationService authenticationService;
+
+    @Mock
     private UserMapper userMapper;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        userController = new UserController(userService, userMapper);
+        userController = new UserController(userService, userMapper, authenticationService);
     }
 
     @Test
-    void get_ValidAuthentication_ReturnsUserResponseDto() {
+    void testValidAuthentication() {
         User user = new User("test@example.com", "John", "Doe", User.Role.CUSTOMER);
         user.setId(1L);
 
@@ -56,7 +60,7 @@ public class UserControllerTest {
     }
 
     @Test
-    void updateRole_ValidIdAndRole_ReturnsUserResponseDto() {
+    void testUpdateRole() {
         User user = new User("test@example.com", "John", "Doe", User.Role.CUSTOMER);
         user.setId(1L);
 

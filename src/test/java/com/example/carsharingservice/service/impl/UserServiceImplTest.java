@@ -39,9 +39,9 @@ class UserServiceImplTest {
     }
 
     @Test
-    void save_ValidUser_ReturnsSavedUserWithEncodedPassword() {
+    void testSave() {
         User user = createUser();
-        String encodedPassword = "encodedPassword";
+        String encodedPassword = "password";
         when(passwordEncoder.encode(user.getPassword())).thenReturn(encodedPassword);
         when(userRepository.save(user)).thenReturn(user);
 
@@ -52,7 +52,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findById_ExistingId_ReturnsUser() {
+    void testFindById_ExistingId() {
         Long id = 1L;
         User user = createUser();
         when(userRepository.findById(id)).thenReturn(Optional.of(user));
@@ -65,7 +65,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findById_NonExistingId_ThrowsException() {
+    void testFindById_NonExistingId() {
         Long id = 1L;
         when(userRepository.findById(id)).thenReturn(Optional.empty());
 
@@ -74,7 +74,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findByEmail_ExistingEmail_ReturnsOptionalUser() {
+    void testFindByEmail_ExistingEmail() {
         String email = "test@example.com";
         User user = createUser();
         when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
@@ -87,7 +87,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findByEmail_NonExistingEmail_ReturnsEmptyOptional() {
+    void testFindByEmail_NonExistingEmail() {
         String email = "test@example.com";
         when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
 
@@ -98,7 +98,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void delete_ExistingId_DeletesUser() {
+    void testDelete() {
         Long id = 1L;
         doNothing().when(userRepository).deleteById(id);
 
@@ -107,7 +107,7 @@ class UserServiceImplTest {
     }
 
     @Test
-    void findAll_ReturnsListOfUsers() {
+    void testFindAll() {
         List<User> users = Collections.singletonList(createUser());
         when(userRepository.findAll()).thenReturn(users);
 

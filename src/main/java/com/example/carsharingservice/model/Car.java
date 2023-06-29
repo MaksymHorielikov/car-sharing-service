@@ -36,8 +36,7 @@ public class Car {
                String model,
                Type type,
                Integer inventory,
-               BigDecimal dailyFee
-    ) {
+               BigDecimal dailyFee) {
         this.model = model;
         this.brand = brand;
         this.type = type;
@@ -50,8 +49,7 @@ public class Car {
                String model,
                Type type,
                Integer inventory,
-               BigDecimal dailyFee
-    ) {
+               BigDecimal dailyFee) {
         this(brand, model, type, inventory, dailyFee);
         this.id = id;
     }

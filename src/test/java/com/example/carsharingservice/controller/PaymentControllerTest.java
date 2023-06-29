@@ -1,5 +1,6 @@
 package com.example.carsharingservice.controller;
 
+import com.example.carsharingservice.config.StripeConfig;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -19,7 +20,6 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 class PaymentControllerTest {
-
     private MockMvc mockMvc;
 
     @Mock
@@ -33,7 +33,7 @@ class PaymentControllerTest {
     @BeforeEach
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        paymentController = new PaymentController(paymentService, paymentMapper);
+        paymentController = new PaymentController(new StripeConfig(), paymentService, paymentMapper);
         mockMvc = MockMvcBuilders.standaloneSetup(paymentController).build();
     }
 
