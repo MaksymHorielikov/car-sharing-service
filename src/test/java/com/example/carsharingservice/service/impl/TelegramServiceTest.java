@@ -23,7 +23,7 @@ class TelegramServiceTest {
     }
 
     @Test
-    void getBotUsername_ReturnsBotUsername() {
+    void testGetBotUsername() {
         String botUsername = "TestBot";
         when(botConfig.getName()).thenReturn(botUsername);
 
@@ -33,7 +33,7 @@ class TelegramServiceTest {
     }
 
     @Test
-    void getBotToken_ReturnsBotToken() {
+    void testGetBotToken() {
         String botToken = "123456789:ABCDEF";
         when(botConfig.getToken()).thenReturn(botToken);
 

@@ -30,7 +30,7 @@ class PaymentServiceImplTest {
     private final NotificationService notificationService = Mockito.mock(NotificationService.class);
 
     @Test
-    void findById_ExistingId_ReturnsPayment() {
+    void testFindById_ExistingId() {
         Long paymentId = 1L;
         Payment payment = new Payment();
         payment.setId(paymentId);
@@ -54,7 +54,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void findById_NonexistentId_ThrowsException() {
+    void testFindById() {
         Long paymentId = 1L;
 
         when(paymentRepository.findById(paymentId)).thenReturn(Optional.empty());
@@ -73,7 +73,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void update_ExistingPayment_UpdatesAndReturnsPayment() {
+    void testUpdate_ExistingPayment() {
         Payment payment = new Payment();
         payment.setId(1L);
 
@@ -103,7 +103,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void update_NonexistentPayment_ThrowsException() {
+    void testUpdate_NonexistentPayment() {
         Payment payment = new Payment();
         payment.setId(1L);
 
@@ -123,7 +123,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void handleSuccess_InvalidSessionId_NoUpdatesOrNotifications() {
+    void testHandleSuccess_InvalidSessionId() {
         String sessionId = "invalidSessionId";
 
         when(paymentRepository.findBySessionId(sessionId)).thenReturn(null);
@@ -142,7 +142,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void handleSuccess_ExistingPayment_NoRental_ThrowsException() {
+    void testHandleSuccess_ExistingPayment_NoRental() {
         String sessionId = "abc123";
         Long rentalId = 1L;
         Payment payment = new Payment();
@@ -167,7 +167,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void handleCancel_InvalidSessionId_NoUpdatesOrNotifications() {
+    void testHandleCancel_InvalidSessionId() {
         String sessionId = "invalidSessionId";
 
         when(paymentRepository.findBySessionId(sessionId)).thenReturn(null);
@@ -186,7 +186,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    void handleSuccess_ExistingSessionId_ValidRentalId_UpdatesPaymentAndSendsNotification() {
+    void testHandleSuccess_ExistingSessionId_ValidRentalId() {
         String sessionId = "session_123";
         Long rentalId = 1L;
 

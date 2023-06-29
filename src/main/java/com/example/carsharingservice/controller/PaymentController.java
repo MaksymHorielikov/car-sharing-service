@@ -10,6 +10,7 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
+import io.swagger.v3.oas.annotations.Operation;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -31,11 +32,13 @@ public class PaymentController {
     private final DtoMapper<Payment, PaymentRequestDto, PaymentResponseDto> paymentMapper;
 
     @PostMapping("/{rentalId}")
+    @Operation(summary = "Create a new payment")
     public PaymentResponseDto createPaymentSession(@PathVariable Long rentalId) {
         return paymentMapper.toDto(paymentService.save(rentalId));
     }
 
     @GetMapping("/{userId}")
+    @Operation(summary = "Get payment by user id")
     public List<PaymentResponseDto> getPaymentsUserById(@PathVariable Long userId) {
         return paymentService.findByUserId(userId).stream()
                 .map(paymentMapper::toDto)
@@ -43,6 +46,7 @@ public class PaymentController {
     }
 
     @PostMapping("/complete/{paymentId}")
+    @Operation(summary = "Complete payment by payment id")
     public PaymentResponseDto complete(@PathVariable Long paymentId) {
         Payment payment = paymentService.findById(paymentId);
         if (paymentService.checkPaymentStatus(payment.getSessionId()).equals("complete")) {
@@ -53,12 +57,14 @@ public class PaymentController {
     }
 
     @PostMapping("/{paymentId}/renew")
+    @Operation(summary = "Renew payment by payment id")
     public PaymentResponseDto renewPayment(@PathVariable Long paymentId) {
         Payment payment = paymentService.renewPayment(paymentId);
         return paymentMapper.toDto(payment);
     }
 
     @PostMapping("/webhook")
+    @Operation(summary = "Accept webhooks")
     public ResponseEntity handleStripeWebhook(@RequestBody String payload,
                                               @RequestHeader("Stripe-Signature") String sigHeader) {
         Event event;
