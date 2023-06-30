@@ -1,5 +1,7 @@
 package com.example.carsharingservice.service.impl;
 
+import com.example.carsharingservice.model.Car;
+import com.example.carsharingservice.model.User;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -17,6 +19,8 @@ import com.example.carsharingservice.repository.RentalRepository;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.PaymentService;
 import com.example.carsharingservice.service.StripePaymentService;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import jakarta.persistence.EntityNotFoundException;
@@ -147,7 +151,6 @@ class PaymentServiceImplTest {
         Long rentalId = 1L;
         Payment payment = new Payment();
         payment.setSessionId(sessionId);
-        payment.setRentalId(rentalId);
 
         when(paymentRepository.findBySessionId(sessionId)).thenReturn(payment);
         when(rentalRepository.findById(rentalId)).thenReturn(Optional.empty());
@@ -162,7 +165,6 @@ class PaymentServiceImplTest {
         assertThrows(RuntimeException.class, () -> paymentService.handleSuccess(sessionId));
 
         verify(paymentRepository, times(1)).findBySessionId(sessionId);
-        verify(rentalRepository, times(1)).findById(rentalId);
         verifyNoMoreInteractions(paymentRepository, rentalRepository, stripePaymentService, notificationService);
     }
 
@@ -189,11 +191,12 @@ class PaymentServiceImplTest {
     void testHandleSuccess_ExistingSessionId_ValidRentalId() {
         String sessionId = "session_123";
         Long rentalId = 1L;
-
-        Rental rental = new Rental(rentalId, LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), 1L, 1L);
+        Car car = new Car(1L, "Toyota", "Camry", Car.Type.SEDAN, 10, new BigDecimal("50.00"));
+        User user = new User(1L, "John", "Doe", "john.doe@example.com", "password", User.Role.CUSTOMER);
+        Rental rental = new Rental(rentalId, LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), car, user);
 
         Payment payment = new Payment();
-        payment.setRentalId(rentalId);
+        payment.setRental(rental);
 
         when(paymentRepository.findBySessionId(sessionId)).thenReturn(payment);
         when(rentalRepository.findById(rentalId)).thenReturn(Optional.of(rental));

@@ -42,14 +42,14 @@ public class Payment {
     public Payment(Long id,
                    Status status,
                    Type type,
-                   Long rentalId,
+                   Rental rental,
                    String sessionUrl,
                    String sessionId,
                    BigDecimal amount) {
         this.id = id;
         this.status = status;
         this.type = type;
-        this.rentalId = rentalId;
+        this.rental = rental;
         this.sessionUrl = sessionUrl;
         this.sessionId = sessionId;
         this.amount = amount;

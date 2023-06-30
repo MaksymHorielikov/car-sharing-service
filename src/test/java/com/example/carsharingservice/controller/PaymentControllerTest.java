@@ -1,6 +1,9 @@
 package com.example.carsharingservice.controller;
 
 import com.example.carsharingservice.config.StripeConfig;
+import com.example.carsharingservice.model.Car;
+import com.example.carsharingservice.model.Rental;
+import com.example.carsharingservice.model.User;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -9,6 +12,8 @@ import com.example.carsharingservice.dto.response.PaymentResponseDto;
 import com.example.carsharingservice.model.Payment;
 import com.example.carsharingservice.service.PaymentService;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -42,7 +47,7 @@ class PaymentControllerTest {
         Long rentalId = 1L;
         Long paymentId = 1L;
         Payment payment = new Payment(paymentId, Payment.Status.PAID, Payment.Type.PAYMENT,
-                123L, "https://example.com/session", "session123", new BigDecimal("100.00"));
+                createRental(), "https://example.com/session", "session123", new BigDecimal("100.00"));
 
         PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
         paymentResponseDto.setId(payment.getId());
@@ -60,7 +65,7 @@ class PaymentControllerTest {
     public void testCompleteWithCompletePayment() throws Exception {
         Long paymentId = 1L;
         Payment payment = new Payment(paymentId, Payment.Status.PAID, Payment.Type.PAYMENT,
-                123L, "https://example.com/session", "session123", new BigDecimal("100.00"));
+                createRental(), "https://example.com/session", "session123", new BigDecimal("100.00"));
 
         PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
         paymentResponseDto.setId(payment.getId());
@@ -82,7 +87,7 @@ class PaymentControllerTest {
     public void testCompleteWithIncompletePayment() throws Exception {
         Long paymentId = 1L;
         Payment payment = new Payment(paymentId, Payment.Status.PAID, Payment.Type.PAYMENT,
-                123L, "https://example.com/session", "session123", new BigDecimal("100.00"));
+                createRental(), "https://example.com/session", "session123", new BigDecimal("100.00"));
 
         PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
         paymentResponseDto.setId(payment.getId());
@@ -102,7 +107,7 @@ class PaymentControllerTest {
     public void testRenewPayment() throws Exception {
         Long paymentId = 1L;
         Payment payment = new Payment(paymentId, Payment.Status.PAID, Payment.Type.PAYMENT,
-                123L, "https://example.com/session", "session123", new BigDecimal("100.00"));
+                createRental(), "https://example.com/session", "session123", new BigDecimal("100.00"));
 
         PaymentResponseDto paymentResponseDto = new PaymentResponseDto();
         paymentResponseDto.setId(payment.getId());
@@ -114,5 +119,14 @@ class PaymentControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(payment.getId()));
+    }
+
+    private Rental createRental() {
+        LocalDateTime rentalDate = LocalDateTime.of(2023, 6, 1, 10, 0);
+        LocalDateTime returnDate = LocalDateTime.of(2023, 6, 5, 12, 0);
+        LocalDateTime actualReturnDate = LocalDateTime.of(2023, 6, 5, 14, 0);
+        Car car = new Car(1L, "Toyota", "Camry", Car.Type.SEDAN, 10, new BigDecimal("50.00"));
+        User user = new User(1L, "John", "Doe", "john.doe@example.com", "password", User.Role.CUSTOMER);
+        return new Rental(rentalDate, returnDate, actualReturnDate, car, user);
     }
 }

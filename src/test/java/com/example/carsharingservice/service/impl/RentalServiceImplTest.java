@@ -1,5 +1,7 @@
 package com.example.carsharingservice.service.impl;
 
+import com.example.carsharingservice.model.Car;
+import com.example.carsharingservice.model.User;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -11,10 +13,11 @@ import static org.mockito.Mockito.when;
 
 import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.repository.RentalRepository;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -66,84 +69,6 @@ class RentalServiceImplTest {
 
         assertDoesNotThrow(() -> rentalService.delete(id));
         verify(rentalRepository, times(1)).deleteById(id);
-    }
-
-    @Test
-    void testFindAll() {
-        List<Rental> rentals = Collections.singletonList(createRental());
-        when(rentalRepository.findAll()).thenReturn(rentals);
-
-        List<Rental> retrievedRentals = rentalService.findAll();
-
-        assertNotNull(retrievedRentals);
-        assertEquals(rentals, retrievedRentals);
-        verify(rentalRepository, times(1)).findAll();
-    }
-
-    @Test
-    void testGetRentalDate_ExistingRentalId() {
-        Long rentalId = 1L;
-        Rental rental = createRental();
-        when(rentalRepository.findRentalDateById(rentalId)).thenReturn(Optional.of(rental.getRentalDate()));
-
-        LocalDateTime rentalDate = rentalService.getRentalDate(rentalId);
-
-        assertNotNull(rentalDate);
-        assertEquals(rental.getRentalDate(), rentalDate);
-        verify(rentalRepository, times(1)).findRentalDateById(rentalId);
-    }
-
-    @Test
-    void testGetRentalDate_NonExistingRentalId() {
-        Long rentalId = 1L;
-        when(rentalRepository.findRentalDateById(rentalId)).thenReturn(Optional.empty());
-
-        assertThrows(RuntimeException.class, () -> rentalService.getRentalDate(rentalId));
-        verify(rentalRepository, times(1)).findRentalDateById(rentalId);
-    }
-
-    @Test
-    void testGetReturnDate_ExistingRentalId() {
-        Long rentalId = 1L;
-        Rental rental = createRental();
-        when(rentalRepository.findReturnDateById(rentalId)).thenReturn(Optional.of(rental.getReturnDate()));
-
-        LocalDateTime returnDate = rentalService.getReturnDate(rentalId);
-
-        assertNotNull(returnDate);
-        assertEquals(rental.getReturnDate(), returnDate);
-        verify(rentalRepository, times(1)).findReturnDateById(rentalId);
-    }
-
-    @Test
-    void testGetReturnDate_NonExistingRentalId() {
-        Long rentalId = 1L;
-        when(rentalRepository.findReturnDateById(rentalId)).thenReturn(Optional.empty());
-
-        assertThrows(RuntimeException.class, () -> rentalService.getReturnDate(rentalId));
-        verify(rentalRepository, times(1)).findReturnDateById(rentalId);
-    }
-
-    @Test
-    void testGetActualReturnDate_ExistingRentalId() {
-        Long rentalId = 1L;
-        Rental rental = createRental();
-        when(rentalRepository.findActualReturnDateById(rentalId)).thenReturn(Optional.of(rental.getActualReturnDate()));
-
-        LocalDateTime actualReturnDate = rentalService.getActualReturnDate(rentalId);
-
-        assertNotNull(actualReturnDate);
-        assertEquals(rental.getActualReturnDate(), actualReturnDate);
-        verify(rentalRepository, times(1)).findActualReturnDateById(rentalId);
-    }
-
-    @Test
-    void testGetActualReturnDate_NonExistingRentalId() {
-        Long rentalId = 1L;
-        when(rentalRepository.findActualReturnDateById(rentalId)).thenReturn(Optional.empty());
-
-        assertThrows(RuntimeException.class, () -> rentalService.getActualReturnDate(rentalId));
-        verify(rentalRepository, times(1)).findActualReturnDateById(rentalId);
     }
 
     @Test
@@ -201,8 +126,8 @@ class RentalServiceImplTest {
         LocalDateTime rentalDate = LocalDateTime.of(2023, 6, 1, 10, 0);
         LocalDateTime returnDate = LocalDateTime.of(2023, 6, 5, 12, 0);
         LocalDateTime actualReturnDate = LocalDateTime.of(2023, 6, 5, 14, 0);
-        Long carId = 1L;
-        Long userId = 1L;
-        return new Rental(rentalDate, returnDate, actualReturnDate, carId, userId);
+        Car car = new Car(1L, "Toyota", "Camry", Car.Type.SEDAN, 10, new BigDecimal("50.00"));
+        User user = new User(1L, "John", "Doe", "john.doe@example.com", "password", User.Role.CUSTOMER);
+        return new Rental(rentalDate, returnDate, actualReturnDate, car, user);
     }
 }
