@@ -3,9 +3,9 @@ package com.example.carsharingservice.service.impl;
 import com.example.carsharingservice.model.Payment;
 import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.repository.PaymentRepository;
-import com.example.carsharingservice.repository.RentalRepository;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.PaymentService;
+import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.StripePaymentService;
 import com.stripe.model.checkout.Session;
 import jakarta.persistence.EntityNotFoundException;
@@ -21,16 +21,14 @@ public class PaymentServiceImpl implements PaymentService {
     private static final BigDecimal FINE_MULTIPLIER = BigDecimal.valueOf(1.5);
     private final StripePaymentService stripePaymentService;
     private final PaymentRepository paymentRepository;
-    private final RentalRepository rentalRepository;
     private final NotificationService notificationService;
+    private final RentalService rentalService;
 
     @Override
     public Payment save(Long rentalId) {
-        Rental rental = rentalRepository.findById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Can't find rental by id: "
-                        + rentalId));
+        Rental rental = rentalService.getById(rentalId);
         Payment payment = new Payment();
-        payment.setRental(rentalRepository.getReferenceById(rentalId));
+        payment.setRental(rentalService.getById(rentalId));
         payment.setType(checkPaymentType(rental));
         BigDecimal rentalAmount = calculateRentalAmount(rental, payment.getType());
         payment.setAmount(rentalAmount);
@@ -58,9 +56,7 @@ public class PaymentServiceImpl implements PaymentService {
     public void handleSuccess(String sessionId) {
         Payment payment = paymentRepository.findBySessionId(sessionId);
         if (payment != null) {
-            Rental rental = rentalRepository.findById(payment.getRental().getId()).orElseThrow(() ->
-                    new RuntimeException("Can't find rental by payment id: "
-                            + payment.getRental().getId()));
+            Rental rental = rentalService.getById(payment.getRental().getId());
             if (rental != null) {
                 payment.setStatus(Payment.Status.PAID);
                 paymentRepository.save(payment);

@@ -27,6 +27,8 @@ public class Rental {
     private LocalDateTime returnDate;
     private LocalDateTime actualReturnDate;
     @OneToOne(fetch = FetchType.LAZY)
+    private Car car;
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "car_id")
     private Car car;
     @ManyToOne(fetch = FetchType.LAZY)

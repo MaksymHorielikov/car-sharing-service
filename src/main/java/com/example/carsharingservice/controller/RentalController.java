@@ -11,6 +11,7 @@ import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -37,7 +38,7 @@ public class RentalController {
 
     @PostMapping
     @Operation(summary = "Create a new rental")
-    public RentalResponseDto add(@RequestBody RentalRequestDto rentalDto) {
+    public RentalResponseDto add(@RequestBody @Valid RentalRequestDto rentalDto) {
         RentalResponseDto rentalResponseDto =
                 rentalMapper.toDto(rentalService.save(rentalMapper.toModel(rentalDto)));
         carService.decreaseInventory(rentalResponseDto.getCarId(), 1);
@@ -86,8 +87,8 @@ public class RentalController {
     @PostMapping("/{id}/return")
     @Operation(summary = "Set the date of car return")
     public RentalResponseDto setActualDate(@PathVariable Long id) {
-        RentalResponseDto rentalResponseDto = rentalMapper.toDto(rentalService.getById(id));
         rentalService.updateActualReturnDate(id);
+        RentalResponseDto rentalResponseDto = rentalMapper.toDto(rentalService.getById(id));
         carService.increaseInventory(rentalResponseDto.getCarId(), 1);
         return rentalResponseDto;
     }
