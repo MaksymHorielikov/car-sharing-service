@@ -12,7 +12,6 @@ import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -100,13 +99,6 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public List<Payment> findByUserIdAndStatus(Long userId, Payment.Status status) {
-        return findByUserId(userId).stream()
-                .filter(p -> p.getStatus() == status)
-                .collect(Collectors.toList());
-    }
-
-    @Override
     public String checkPaymentStatus(String sessionId) {
         return stripePaymentService.checkPaymentStatus(sessionId);
     }
@@ -135,9 +127,8 @@ public class PaymentServiceImpl implements PaymentService {
                 rental.getActualReturnDate()).toDays();
         if (expectedDaysBetween >= daysBetween) {
             return Payment.Type.PAYMENT;
-        } else {
-            return Payment.Type.FINE;
         }
+        return Payment.Type.FINE;
     }
 
     @Override

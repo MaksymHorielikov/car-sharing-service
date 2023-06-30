@@ -32,32 +32,6 @@ public class RentalServiceImpl implements RentalService {
     }
 
     @Override
-    public List<Rental> findAll() {
-        return rentalRepository.findAll();
-    }
-    
-    @Override
-    public LocalDateTime getRentalDate(Long rentalId) {
-        return rentalRepository.findRentalDateById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Rental with id "
-                        + rentalId + " not found"));
-    }
-
-    @Override
-    public LocalDateTime getReturnDate(Long rentalId) {
-        return rentalRepository.findReturnDateById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Rental with id "
-                        + rentalId + " not found"));
-    }
-
-    @Override
-    public LocalDateTime getActualReturnDate(Long rentalId) {
-        return rentalRepository.findActualReturnDateById(rentalId)
-                .orElseThrow(() -> new RuntimeException("Rental with id "
-                        + rentalId + " not found"));
-    }
-
-    @Override
     public List<Rental> findAllByUserId(Long userId, PageRequest pageRequest) {
         return rentalRepository.findAllByUserId(userId, pageRequest);
     }

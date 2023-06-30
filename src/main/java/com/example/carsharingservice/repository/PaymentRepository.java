@@ -11,14 +11,14 @@ import org.springframework.stereotype.Repository;
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
     Payment findBySessionId(String sessionId);
 
-    Payment findByRentalId(Long id);
-
-    @Query(value = "SELECT c.daily_fee FROM cars c JOIN rentals r ON r.car_id = c.id WHERE r.id=?1",
-            nativeQuery = true)
+    @Query(value = "SELECT c.daily_fee FROM cars c JOIN rentals r ON r.car_id = c.id WHERE r.id=?1 "
+            + "AND c.deleted = FALSE", nativeQuery = true)
     BigDecimal getDailyFeeByRentalId(Long id);
 
-    @Query(value = "SELECT p.id, p.status, p.type, p.rental_id, p.amount FROM payments p "
-            + "JOIN rentals r ON r.id = p.rental_id WHERE r.user_id=?1",
-            nativeQuery = true)
+    @Query(value = "FROM Payment p "
+            + "LEFT JOIN FETCH p.rental pr "
+            + "LEFT JOIN FETCH pr.car "
+            + "LEFT JOIN FETCH pr.user pru "
+            + "WHERE pru.id =: userId AND p.deleted = FALSE")
     List<Payment> findAllByUserId(Long userId);
 }

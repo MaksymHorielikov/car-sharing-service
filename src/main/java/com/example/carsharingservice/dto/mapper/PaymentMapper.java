@@ -4,11 +4,11 @@ import com.example.carsharingservice.dto.request.PaymentRequestDto;
 import com.example.carsharingservice.dto.response.PaymentResponseDto;
 import com.example.carsharingservice.model.Payment;
 import com.example.carsharingservice.service.RentalService;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-@AllArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class PaymentMapper implements DtoMapper<Payment, PaymentRequestDto, PaymentResponseDto> {
     private final RentalService rentalService;
 

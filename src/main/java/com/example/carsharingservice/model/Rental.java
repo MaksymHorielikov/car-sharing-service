@@ -5,6 +5,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -28,6 +29,35 @@ public class Rental {
     @OneToOne(fetch = FetchType.LAZY)
     private Car car;
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "car_id")
+    private Car car;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
     private boolean deleted;
+
+    public Rental() {
+    }
+
+    public Rental(LocalDateTime rentalDate,
+                  LocalDateTime returnDate,
+                  LocalDateTime actualReturnDate,
+                  Long carId,
+                  Long userId) {
+        this.rentalDate = rentalDate;
+        this.returnDate = returnDate;
+        this.actualReturnDate = actualReturnDate;
+        this.carId = carId;
+        this.userId = userId;
+    }
+
+    public Rental(Long id,
+                  LocalDateTime rentalDate,
+                  LocalDateTime returnDate,
+                  LocalDateTime actualReturnDate,
+                  Long carId,
+                  Long userId) {
+        this(rentalDate, returnDate, actualReturnDate, carId, userId);
+        this.id = id;
+    }
 }
