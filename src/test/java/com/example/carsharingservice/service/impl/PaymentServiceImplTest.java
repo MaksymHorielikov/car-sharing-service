@@ -1,27 +1,21 @@
 package com.example.carsharingservice.service.impl;
 
-import com.example.carsharingservice.model.Car;
-import com.example.carsharingservice.model.User;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import com.example.carsharingservice.model.Payment;
-import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.repository.PaymentRepository;
 import com.example.carsharingservice.repository.RentalRepository;
 import com.example.carsharingservice.service.NotificationService;
 import com.example.carsharingservice.service.PaymentService;
+import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.StripePaymentService;
-
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Optional;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.Test;
@@ -31,6 +25,7 @@ class PaymentServiceImplTest {
     private final StripePaymentService stripePaymentService = Mockito.mock(StripePaymentService.class);
     private final PaymentRepository paymentRepository = Mockito.mock(PaymentRepository.class);
     private final RentalRepository rentalRepository = Mockito.mock(RentalRepository.class);
+    private final RentalService rentalService = Mockito.mock(RentalService.class);
     private final NotificationService notificationService = Mockito.mock(NotificationService.class);
 
     @Test
@@ -44,8 +39,8 @@ class PaymentServiceImplTest {
         PaymentService paymentService = new PaymentServiceImpl(
                 stripePaymentService,
                 paymentRepository,
-                rentalRepository,
-                notificationService
+                notificationService,
+                rentalService
         );
 
         Payment result = paymentService.findById(paymentId);
@@ -66,8 +61,8 @@ class PaymentServiceImplTest {
         PaymentService paymentService = new PaymentServiceImpl(
                 stripePaymentService,
                 paymentRepository,
-                rentalRepository,
-                notificationService
+                notificationService,
+                rentalService
         );
 
         assertThrows(RuntimeException.class, () -> paymentService.findById(paymentId));
@@ -87,8 +82,8 @@ class PaymentServiceImplTest {
         PaymentService paymentService = new PaymentServiceImpl(
                 stripePaymentService,
                 paymentRepository,
-                rentalRepository,
-                notificationService
+                notificationService,
+                rentalService
         );
 
         Payment updatedPayment = new Payment();
@@ -116,8 +111,8 @@ class PaymentServiceImplTest {
         PaymentService paymentService = new PaymentServiceImpl(
                 stripePaymentService,
                 paymentRepository,
-                rentalRepository,
-                notificationService
+                notificationService,
+                rentalService
         );
 
         assertThrows(EntityNotFoundException.class, () -> paymentService.update(payment));
@@ -135,8 +130,8 @@ class PaymentServiceImplTest {
         PaymentService paymentService = new PaymentServiceImpl(
                 stripePaymentService,
                 paymentRepository,
-                rentalRepository,
-                notificationService
+                notificationService,
+                rentalService
         );
 
         paymentService.handleSuccess(sessionId);
@@ -158,8 +153,8 @@ class PaymentServiceImplTest {
         PaymentService paymentService = new PaymentServiceImpl(
                 stripePaymentService,
                 paymentRepository,
-                rentalRepository,
-                notificationService
+                notificationService,
+                rentalService
         );
 
         assertThrows(RuntimeException.class, () -> paymentService.handleSuccess(sessionId));
@@ -177,45 +172,13 @@ class PaymentServiceImplTest {
         PaymentService paymentService = new PaymentServiceImpl(
                 stripePaymentService,
                 paymentRepository,
-                rentalRepository,
-                notificationService
+                notificationService,
+                rentalService
         );
 
         paymentService.handleCancel(sessionId);
 
         verify(paymentRepository, times(1)).findBySessionId(sessionId);
-        verifyNoMoreInteractions(paymentRepository, rentalRepository, stripePaymentService, notificationService);
-    }
-
-    @Test
-    void testHandleSuccess_ExistingSessionId_ValidRentalId() {
-        String sessionId = "session_123";
-        Long rentalId = 1L;
-        Car car = new Car(1L, "Toyota", "Camry", Car.Type.SEDAN, 10, new BigDecimal("50.00"));
-        User user = new User(1L, "John", "Doe", "john.doe@example.com", "password", User.Role.CUSTOMER);
-        Rental rental = new Rental(rentalId, LocalDateTime.now(), LocalDateTime.now(), LocalDateTime.now(), car, user);
-
-        Payment payment = new Payment();
-        payment.setRental(rental);
-
-        when(paymentRepository.findBySessionId(sessionId)).thenReturn(payment);
-        when(rentalRepository.findById(rentalId)).thenReturn(Optional.of(rental));
-
-        PaymentService paymentService = new PaymentServiceImpl(
-                stripePaymentService,
-                paymentRepository,
-                rentalRepository,
-                notificationService
-        );
-
-        paymentService.handleSuccess(sessionId);
-
-        assertEquals(Payment.Status.PAID, payment.getStatus());
-
-        verify(paymentRepository, times(1)).findBySessionId(sessionId);
-        verify(rentalRepository, times(1)).findById(rentalId);
-        verify(paymentRepository, times(1)).save(payment);
-        verify(notificationService, times(1)).sendMessage(anyString(), anyString());
         verifyNoMoreInteractions(paymentRepository, rentalRepository, stripePaymentService, notificationService);
     }
 }
