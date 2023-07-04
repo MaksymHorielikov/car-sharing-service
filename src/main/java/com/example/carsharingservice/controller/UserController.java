@@ -8,6 +8,8 @@ import com.example.carsharingservice.security.AuthenticationService;
 import com.example.carsharingservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +39,11 @@ public class UserController {
     @PutMapping("/me")
     @Operation(summary = "Update profile info by token")
     public UserResponseDto update(Authentication authentication,
+                                  @Parameter(
+                                          description = "User with required changes to update",
+                                          required = true,
+                                          content = @Content(schema =
+                                          @Schema(implementation = UserRequestDto.class)))
                                   @RequestBody @Valid UserRequestDto userRequestDto) {
         Long userId = userService.findByEmail(authentication.getName()).get().getId();
         User user = userMapper.toModel(userRequestDto);
@@ -48,7 +55,8 @@ public class UserController {
 
     @PutMapping("/{id}/role")
     @Operation(summary = "Update user role")
-    public UserResponseDto updateRole(@PathVariable Long id,
+    public UserResponseDto updateRole(@Parameter(description = "User's id to update role")
+                                          @PathVariable Long id,
                                       @RequestParam("role")
                                       @Parameter(description = "role user MANAGER or CUSTOMER")
                                       String role) {

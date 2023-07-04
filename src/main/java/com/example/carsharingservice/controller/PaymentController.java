@@ -11,6 +11,7 @@ import com.stripe.model.Event;
 import com.stripe.model.checkout.Session;
 import com.stripe.net.Webhook;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -32,14 +33,18 @@ public class PaymentController {
     private final DtoMapper<Payment, PaymentRequestDto, PaymentResponseDto> paymentMapper;
 
     @PostMapping("/{rentalId}")
-    @Operation(summary = "Create a new payment")
-    public PaymentResponseDto createPaymentSession(@PathVariable Long rentalId) {
+    @Operation(summary = "Create a new payment session")
+    public PaymentResponseDto createPaymentSession(
+            @Parameter(description = "Payment's id to create new payment session")
+            @PathVariable Long rentalId) {
         return paymentMapper.toDto(paymentService.save(rentalId));
     }
 
     @GetMapping("/{userId}")
     @Operation(summary = "Get payment by user id")
-    public List<PaymentResponseDto> getPaymentsUserById(@PathVariable Long userId) {
+    public List<PaymentResponseDto> getPaymentsUserById(
+            @Parameter(description = "Payment's id to find it")
+            @PathVariable Long userId) {
         return paymentService.findByUserId(userId).stream()
                 .map(paymentMapper::toDto)
                 .collect(Collectors.toList());
@@ -47,7 +52,8 @@ public class PaymentController {
 
     @PostMapping("/complete/{paymentId}")
     @Operation(summary = "Complete payment by payment id")
-    public PaymentResponseDto complete(@PathVariable Long paymentId) {
+    public PaymentResponseDto complete(@Parameter(description = "Payment's id to complete it")
+                                           @PathVariable Long paymentId) {
         Payment payment = paymentService.findById(paymentId);
         if (paymentService.checkPaymentStatus(payment.getSessionId()).equals("complete")) {
             payment.setStatus(Payment.Status.PAID);
@@ -58,7 +64,8 @@ public class PaymentController {
 
     @PostMapping("/{paymentId}/renew")
     @Operation(summary = "Renew payment by payment id")
-    public PaymentResponseDto renewPayment(@PathVariable Long paymentId) {
+    public PaymentResponseDto renewPayment(@Parameter(description = "Payment's id to renew it")
+                                               @PathVariable Long paymentId) {
         Payment payment = paymentService.renewPayment(paymentId);
         return paymentMapper.toDto(payment);
     }

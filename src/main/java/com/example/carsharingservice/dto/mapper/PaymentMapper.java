@@ -15,11 +15,8 @@ public class PaymentMapper implements DtoMapper<Payment, PaymentRequestDto, Paym
     @Override
     public Payment toModel(PaymentRequestDto requestDto) {
         Payment payment = new Payment();
-        payment.setStatus(requestDto.getStatus());
         payment.setType(requestDto.getType());
         payment.setRental(rentalService.getById(requestDto.getRentalId()));
-        payment.setSessionUrl(requestDto.getSessionUrl());
-        payment.setSessionId(requestDto.getSessionId());
         payment.setAmount(requestDto.getAmount());
         return payment;
     }
