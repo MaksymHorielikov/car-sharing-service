@@ -6,6 +6,10 @@ import com.example.carsharingservice.dto.response.CarResponseDto;
 import com.example.carsharingservice.model.Car;
 import com.example.carsharingservice.service.CarService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -27,7 +31,12 @@ public class CarController {
 
     @PostMapping()
     @Operation(summary = "Create a new car")
-    public CarResponseDto create(@RequestBody CarRequestDto carRequestDto) {
+    public CarResponseDto create(
+            @Parameter(
+                    description = "New car to add to service",
+                    required = true,
+                    content = @Content(schema = @Schema(implementation = CarRequestDto.class)))
+            @RequestBody @Valid CarRequestDto carRequestDto) {
         return mapper.toDto(carService.createCar(mapper.toModel(carRequestDto)));
     }
 
@@ -41,22 +50,30 @@ public class CarController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get the car by id")
-    public CarResponseDto getById(@PathVariable Long id) {
+    @Operation(summary = "Get a car by id")
+    public CarResponseDto getById(@Parameter(description = "Car's id to find it")
+                                      @PathVariable Long id) {
         return mapper.toDto(carService.findById(id));
     }
 
     @PutMapping("/{id}")
-    @Operation(summary = "Update the car")
-    public CarResponseDto update(@PathVariable Long id, @RequestBody CarRequestDto carRequestDto) {
+    @Operation(summary = "Update a car")
+    public CarResponseDto update(@Parameter(description = "Car's id to update it")
+                                     @PathVariable Long id,
+                                 @Parameter(
+                                         description = "Car with required changes to update",
+                                         required = true,
+                                         content = @Content(schema = @Schema(implementation =
+                                                 CarRequestDto.class)))
+                                 @RequestBody @Valid CarRequestDto carRequestDto) {
         Car car = mapper.toModel(carRequestDto);
         car.setId(id);
         return mapper.toDto(carService.update(car));
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete the car")
-    public void delete(@PathVariable Long id) {
+    @Operation(summary = "Delete a car")
+    public void delete(@Parameter(description = "Car's id to delete it") @PathVariable Long id) {
         carService.deleteById(id);
     }
 }

@@ -9,6 +9,9 @@ import com.example.carsharingservice.model.User;
 import com.example.carsharingservice.security.AuthenticationService;
 import com.example.carsharingservice.security.jwt.JwtTokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
@@ -32,13 +35,21 @@ public class AuthenticationController {
     @PostMapping("/register")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Registration of a new user (default role a CUSTOMER)")
-    public UserResponseDto register(@RequestBody @Valid UserRequestDto userRequestDto) {
+    public UserResponseDto register(@Parameter(
+            description = "New user to register in service",
+            required = true,
+            content = @Content(schema = @Schema(implementation = UserRequestDto.class)))
+                                        @RequestBody @Valid UserRequestDto userRequestDto) {
         return userMapper.toDto(authenticationService.register(userRequestDto));
     }
 
     @PostMapping("/login")
     @Operation(summary = "Get a JWT token for registration user")
-    public ResponseEntity<Object> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
+    public ResponseEntity<Object> login(@Parameter(
+            description = "Login to get a JWT token",
+            required = true,
+            content = @Content(schema = @Schema(implementation = LoginRequestDto.class)))
+                                            @RequestBody @Valid LoginRequestDto loginRequestDto) {
         User user;
         try {
             user = authenticationService
