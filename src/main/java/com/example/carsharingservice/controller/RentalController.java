@@ -11,6 +11,8 @@ import com.example.carsharingservice.service.RentalService;
 import com.example.carsharingservice.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.Objects;
@@ -38,7 +40,12 @@ public class RentalController {
 
     @PostMapping
     @Operation(summary = "Create a new rental")
-    public RentalResponseDto add(@RequestBody @Valid RentalRequestDto rentalDto) {
+    public RentalResponseDto add(
+            @Parameter(
+                description = "New rental to add to service",
+                required = true,
+                content = @Content(schema = @Schema(implementation = RentalRequestDto.class)))
+            @RequestBody @Valid RentalRequestDto rentalDto) {
         RentalResponseDto rentalResponseDto =
                 rentalMapper.toDto(rentalService.save(rentalMapper.toModel(rentalDto)));
         carService.decreaseInventory(rentalResponseDto.getCarId(), 1);
@@ -75,6 +82,7 @@ public class RentalController {
     @GetMapping("/{id}")
     @Operation(summary = "Get by id")
     public RentalResponseDto getById(Authentication authentication,
+                                     @Parameter(description = "Rental's id to find it")
                                      @PathVariable Long id) {
         User user = userService.findByEmail(authentication.getName()).get();
         if (user.getRole() == User.Role.CUSTOMER && !Objects.equals(user.getId(),
@@ -86,7 +94,9 @@ public class RentalController {
 
     @PostMapping("/{id}/return")
     @Operation(summary = "Set the date of car return")
-    public RentalResponseDto setActualDate(@PathVariable Long id) {
+    public RentalResponseDto setActualDate(
+            @Parameter(description = "Rental's id to find set the date of car return")
+            @PathVariable Long id) {
         rentalService.updateActualReturnDate(id);
         RentalResponseDto rentalResponseDto = rentalMapper.toDto(rentalService.getById(id));
         carService.increaseInventory(rentalResponseDto.getCarId(), 1);
