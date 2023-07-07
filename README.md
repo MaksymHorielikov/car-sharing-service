@@ -1,4 +1,4 @@
-<img src="https://img.uxwing.com/wp-content/themes/uxwing/download/transportation-automotive/car-sharing-icon.png" width="300" height="300">
+<img src="https://img.uxwing.com/wp-content/themes/uxwing/download/transportation-automotive/car-sharing-icon.png" width="300" height="300" alt="icon">
 
 # ﻿🚗CAR-SHARING
 Introducing the ultimate car-sharing app! Discover a wide range of vehicles, book with ease, enjoy flexible rental durations, and experience top-notch safety features. Whether you're commuting to work, running errands, or planning a road trip, provides a seamless and convenient solution for all your transportation needs. 
@@ -20,7 +20,7 @@ Introducing the ultimate car-sharing app! Discover a wide range of vehicles, boo
 * `config` - stores Spring and App configuration
 * `controller` - contains controllers for endpoints with different access depending on the role
 * `dto` - wrapper for model objects to unify the requests and responses in controllers
-* `exception` - custom exception class for DAO's exceptions
+* `exception` - custom exception classes
 * `model` - contains models of entity for the database
 * `repository` - repository with CRUD methods in the database
 * `security` - contains security settings using the JWT authentication
@@ -30,12 +30,13 @@ Introducing the ultimate car-sharing app! Discover a wide range of vehicles, boo
 ## 💾 Getting Started
 -  Clone the project repository to your local machine.
 -  You need to get a token to create a Telegram-bot https://t.me/BotFather
--  Configure the database connection parameters in the `resources/db.properties` file.
--  
+-  Configure the database connection, telegram bot and stripe parameters in the `resources/application.properties` file.
+
+
 -  Local build:
 -  Build the project: mvn compile
--  Run the application: npm start or yarn start
--  
+
+  
 -  Docker:
 -  Ensure Docker is installed and running
 -  Set your credentials in `.env`

@@ -1,5 +1,6 @@
 package com.example.carsharingservice.service.impl;
 
+import com.example.carsharingservice.config.BotConfig;
 import com.example.carsharingservice.model.Payment;
 import com.example.carsharingservice.model.Rental;
 import com.example.carsharingservice.repository.PaymentRepository;
@@ -23,6 +24,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final NotificationService notificationService;
     private final RentalService rentalService;
+    private final BotConfig botConfig;
 
     @Override
     public Payment save(Long rentalId) {
@@ -60,8 +62,8 @@ public class PaymentServiceImpl implements PaymentService {
             if (rental != null) {
                 payment.setStatus(Payment.Status.PAID);
                 paymentRepository.save(payment);
-                notificationService.sendMessage("509114006","Payment was successful: \n"
-                        + payment);
+                notificationService.sendMessage(botConfig.getAdminId(),
+                        "Payment was successful: \n" + payment);
             }
         }
     }
@@ -72,7 +74,7 @@ public class PaymentServiceImpl implements PaymentService {
         if (payment != null) {
             payment.setStatus(Payment.Status.PENDING);
             paymentRepository.save(payment);
-            notificationService.sendMessage("509114006",
+            notificationService.sendMessage(botConfig.getAdminId(),
                     "Payment was unsuccessful: \n" + payment);
         }
     }
