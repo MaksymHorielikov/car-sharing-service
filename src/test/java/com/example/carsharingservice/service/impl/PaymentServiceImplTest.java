@@ -9,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import com.example.carsharingservice.config.BotConfig;
 import com.example.carsharingservice.model.Payment;
 import com.example.carsharingservice.repository.PaymentRepository;
 import com.example.carsharingservice.repository.RentalRepository;
@@ -27,6 +28,7 @@ class PaymentServiceImplTest {
     private final RentalRepository rentalRepository = Mockito.mock(RentalRepository.class);
     private final RentalService rentalService = Mockito.mock(RentalService.class);
     private final NotificationService notificationService = Mockito.mock(NotificationService.class);
+    private final BotConfig botConfig = Mockito.mock(BotConfig.class);
 
     @Test
     void testFindById_ExistingId() {
@@ -40,7 +42,8 @@ class PaymentServiceImplTest {
                 stripePaymentService,
                 paymentRepository,
                 notificationService,
-                rentalService
+                rentalService,
+                botConfig
         );
 
         Payment result = paymentService.findById(paymentId);
@@ -62,7 +65,8 @@ class PaymentServiceImplTest {
                 stripePaymentService,
                 paymentRepository,
                 notificationService,
-                rentalService
+                rentalService,
+                botConfig
         );
 
         assertThrows(RuntimeException.class, () -> paymentService.findById(paymentId));
@@ -83,7 +87,8 @@ class PaymentServiceImplTest {
                 stripePaymentService,
                 paymentRepository,
                 notificationService,
-                rentalService
+                rentalService,
+                botConfig
         );
 
         Payment updatedPayment = new Payment();
@@ -112,7 +117,8 @@ class PaymentServiceImplTest {
                 stripePaymentService,
                 paymentRepository,
                 notificationService,
-                rentalService
+                rentalService,
+                botConfig
         );
 
         assertThrows(EntityNotFoundException.class, () -> paymentService.update(payment));
@@ -131,7 +137,8 @@ class PaymentServiceImplTest {
                 stripePaymentService,
                 paymentRepository,
                 notificationService,
-                rentalService
+                rentalService,
+                botConfig
         );
 
         paymentService.handleSuccess(sessionId);
@@ -154,7 +161,8 @@ class PaymentServiceImplTest {
                 stripePaymentService,
                 paymentRepository,
                 notificationService,
-                rentalService
+                rentalService,
+                botConfig
         );
 
         assertThrows(RuntimeException.class, () -> paymentService.handleSuccess(sessionId));
@@ -173,7 +181,8 @@ class PaymentServiceImplTest {
                 stripePaymentService,
                 paymentRepository,
                 notificationService,
-                rentalService
+                rentalService,
+                botConfig
         );
 
         paymentService.handleCancel(sessionId);
