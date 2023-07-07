@@ -17,18 +17,15 @@ Introducing the ultimate car-sharing app! Discover a wide range of vehicles, boo
 `Car booking and management:` With, the process of booking and managing rental cars is effortless. Users can easily search for available cars, book them for their desired rental periods, and efficiently return them when they are done. The app accurately tracks all the necessary details, ensuring a streamlined and user-friendly car rental experience.
 
 ## 📃 Structure
-* `controller` - contains controllers for endpoints with different access depending on the role
 * `config` - stores Spring and App configuration
-* `repository` - repository with CRUD methods in the database
+* `controller` - contains controllers for endpoints with different access depending on the role
 * `dto` - wrapper for model objects to unify the requests and responses in controllers
-* `exception` - custom exception class for DAO's exceptions 
-* `lib` - contains email and password validators with its annotations
+* `exception` - custom exception class for DAO's exceptions
 * `model` - contains models of entity for the database
+* `repository` - repository with CRUD methods in the database
+* `security` - contains security settings using the JWT authentication
 * `service` - contains services that call repositories and perform business logic
-* `mapper` - сonverts model objects into DTO objects and vice versa
 * `resources` - contains properties for database
-* `telegram bot` - this package contains Telegram bot settings
-* `security.jwt` - contains security settings using the JWT authentication
 
 ## 💾 Getting Started
 -  Clone the project repository to your local machine.
